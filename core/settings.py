@@ -37,7 +37,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'djoser',
     'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +46,7 @@ INSTALLED_APPS = [
 
     'rest_framework', 
     'rest_framework_simplejwt',
+    'django_rest_passwordreset',
     
     'rentals',
     'staff',
@@ -83,7 +83,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,6 +128,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -152,9 +155,18 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'staff.Manager'
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'api/staff/auth/password/reset/confirm/{uid}/{token}',
     'PASSWORD_RESET_URL': 'api/staff/auth/password/reset/',
 }
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "MY APP"
+EMAIL_HOST_USER = "nyikayedu00"
+EMAIL_HOST_PASSWORD = "onot hqsx apxh eidv "

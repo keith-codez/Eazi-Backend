@@ -8,6 +8,4 @@ urlpatterns = [
     path("login/", login_manager, name="login_manager"),
     path('auth/', include('djoser.urls')),  # Includes authentication routes (including password reset)
     path('auth/', include('djoser.urls.authtoken')),  # Includes token-based authentication routes
-    path('auth/password/reset/', include('djoser.urls')),
-    path('api/staff/auth/users/reset_password_confirm/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 ]
