@@ -56,7 +56,6 @@ class Vehicle(models.Model):
         ("private", "Privately Owned"),
     ]
 
-    brand = models.CharField(max_length=100)
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     color = models.CharField(max_length=50)
@@ -67,7 +66,7 @@ class Vehicle(models.Model):
     registration_number = models.CharField(max_length=20, unique=True)  # ✅ Vehicle Registration Field
 
     def __str__(self):
-        return f"{self.brand} {self.make} {self.model} ({self.registration_number})"
+        return f"{self.make} {self.model} {self.color} ({self.registration_number})"
 
         
 class VehicleImage(models.Model):
@@ -100,7 +99,7 @@ class VehicleUnavailability(models.Model):
 
 
     def __str__(self):
-        return f"{self.vehicle.brand} {self.vehicle.model} unavailable from {self.start_date} ro {self.end_date}"
+        return f"{self.vehicle.make} {self.vehicle.model} unavailable from {self.start_date} ro {self.end_date}"
 
 
 

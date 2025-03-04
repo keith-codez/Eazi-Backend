@@ -21,9 +21,9 @@ class VehicleUnavailabilityInline(admin.TabularInline):
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ("brand", "make", "model", "registration_number", "color", "mileage", "price_per_day", "ownership")
-    list_filter = ("ownership", "brand", "make")
-    search_fields = ("brand", "make", "model", "registration_number")
+    list_display = ("make", "model", "registration_number", "color", "mileage", "price_per_day", "ownership")
+    list_filter = ("ownership", "make", "model")
+    search_fields = ("make", "model", "registration_number")
     inlines = [VehicleImageInline, VehicleUnavailabilityInline]  # ✅ Includes Images & Unavailability
 
 
@@ -36,4 +36,4 @@ class MaintenanceRecordAdmin(admin.ModelAdmin):
 class VehicleUnavailabilityAdmin(admin.ModelAdmin):
     list_display = ("vehicle", "start_date", "end_date", "reason")
     list_filter = ("start_date", "end_date", "reason")
-    search_fields = ("vehicle__brand", "vehicle__model", "reason")
+    search_fields = ("vehicle__make", "vehicle__model", "reason")
