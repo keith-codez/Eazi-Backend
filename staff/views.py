@@ -1,9 +1,11 @@
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer
+from .models import Vehicle, MaintenanceRecord
+
 
 
 User = get_user_model()
@@ -35,3 +37,16 @@ def login_manager(request):
         }, status=status.HTTP_200_OK)
 
     return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+class VehicleViewSet(viewsets.ModelViewSet):
+    queryset = Vehicle.objects.all()
+    serializer_class = VehicleSerializer
+
+class MaintenanceRecordViewSet(viewsets.ModelViewSet):
+    queryset = MaintenanceRecord.objects.all()
+    serializer_class = MaintenanceRecordSerializer

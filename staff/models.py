@@ -45,3 +45,46 @@ def password_reset_token_created(reset_password_token, *args, **kwargs):
 
     msg.attach_alternative(html_message, "text/html")
     msg.send()
+
+
+
+
+
+class Vehicle(models.Model):
+    OWNERSHIP_CHOICES = [
+        ("company", "Company Owned"),
+        ("private", "Privately Owned"),
+    ]
+
+    brand = models.CharField(max_length=100)
+    make = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+    color = models.CharField(max_length=50)
+    mileage = models.PositiveIntegerField()
+    ownership = models.CharField(max_length=10, choices=OWNERSHIP_CHOICES)
+    maintenance_records = models.TextField(blank=True, null=True)
+    registration_number = models.CharField(max_length=20, unique=True)  # ✅ Vehicle Registration Field
+
+    def __str__(self):
+        return f"{self.brand} {self.make} {self.model} ({self.registration_number})"
+
+        
+class VehicleImage(models.Model):
+    vehicle = models.ForeignKey(Vehicle, related_name="images", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="vehicle_images/")
+
+    def __str__(self):
+        return f"Image for {self.vehicle.brand} {self.vehicle.make}"
+
+
+
+
+class MaintenanceRecord(models.Model):
+    
+    vehicle = models.ForeignKey(Vehicle, related_name="maintenance_entries", on_delete=models.CASCADE)  # Fix conflict
+    date = models.DateField()
+    description = models.TextField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Maintenance for {self.vehicle.brand} {self.vehicle.model} on {self.date}"
