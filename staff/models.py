@@ -62,6 +62,7 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=50)
     mileage = models.PositiveIntegerField()
     ownership = models.CharField(max_length=10, choices=OWNERSHIP_CHOICES)
+    price_per_day = models.DecimalField(max_digits=10, decimal_places=2)
     maintenance_records = models.TextField(blank=True, null=True)
     registration_number = models.CharField(max_length=20, unique=True)  # ✅ Vehicle Registration Field
 
@@ -88,3 +89,18 @@ class MaintenanceRecord(models.Model):
 
     def __str__(self):
         return f"Maintenance for {self.vehicle.brand} {self.vehicle.model} on {self.date}"
+
+
+
+class VehicleUnavailability(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name="unavailable_periods")
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.CharField(max_length=255, choices=[("maintenance", "Maintenance"),("booking", "Booking"), ("other", "Other")], default="other")
+
+
+    def __str__(self):
+        return f"{self.vehicle.brand} {self.vehicle.model} unavailable from {self.start_date} ro {self.end_date}"
+
+
+

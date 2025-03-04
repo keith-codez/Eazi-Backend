@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import Vehicle, MaintenanceRecord, VehicleImage
-
+from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability
 
 User = get_user_model()
 
@@ -10,19 +9,31 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'is_staff', 'is_active')
 
 
-
-class VehicleImageInline(admin.TabularInline):  # ✅ Allows adding multiple images per vehicle
+# ✅ Allows adding multiple images per vehicle
+class VehicleImageInline(admin.TabularInline):
     model = VehicleImage
-    extra = 1  # Allows adding extra image slots in admin
+    extra = 1  # Provides extra slots for image uploads
 
+# ✅ Allows adding unavailability periods inside the vehicle admin panel
+class VehicleUnavailabilityInline(admin.TabularInline):
+    model = VehicleUnavailability
+    extra = 1  # Allows quick addition of unavailability periods
+
+@admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ("brand", "make", "model", "registration_number", "color", "mileage", "ownership")  # ✅ Show registration
-    search_fields = ("brand", "make", "model", "registration_number")  # ✅ Enable search by registration number
-    inlines = [VehicleImageInline]
-
-admin.site.register(Vehicle, VehicleAdmin) 
+    list_display = ("brand", "make", "model", "registration_number", "color", "mileage", "price_per_day", "ownership")
+    list_filter = ("ownership", "brand", "make")
+    search_fields = ("brand", "make", "model", "registration_number")
+    inlines = [VehicleImageInline, VehicleUnavailabilityInline]  # ✅ Includes Images & Unavailability
 
 
 @admin.register(MaintenanceRecord)
 class MaintenanceRecordAdmin(admin.ModelAdmin):
     list_display = ("vehicle", "date", "cost")
+
+
+@admin.register(VehicleUnavailability)
+class VehicleUnavailabilityAdmin(admin.ModelAdmin):
+    list_display = ("vehicle", "start_date", "end_date", "reason")
+    list_filter = ("start_date", "end_date", "reason")
+    search_fields = ("vehicle__brand", "vehicle__model", "reason")

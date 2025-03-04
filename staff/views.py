@@ -1,10 +1,10 @@
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer
-from .models import Vehicle, MaintenanceRecord
+from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer
+from .models import Vehicle, MaintenanceRecord, VehicleUnavailability
 
 
 
@@ -50,3 +50,8 @@ class VehicleViewSet(viewsets.ModelViewSet):
 class MaintenanceRecordViewSet(viewsets.ModelViewSet):
     queryset = MaintenanceRecord.objects.all()
     serializer_class = MaintenanceRecordSerializer
+
+
+class VehicleUnavailabilityListCreateView(generics.ListCreateAPIView):
+    queryset = VehicleUnavailability.objects.all()
+    serializer_class = VehicleUnavailabilitySerializer

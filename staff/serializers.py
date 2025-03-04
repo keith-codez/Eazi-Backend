@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Vehicle, VehicleImage, MaintenanceRecord
+from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability
 
 
 
@@ -48,3 +48,9 @@ class VehicleSerializer(serializers.ModelSerializer):
         for image_data in images_data:
             VehicleImage.objects.create(vehicle=vehicle, image=image_data)
         return vehicle
+
+
+class VehicleUnavailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VehicleUnavailability
+        fields = ["id", "vehicle", "start_date", "end_date", "reason"]
