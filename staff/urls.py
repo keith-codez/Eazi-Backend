@@ -17,4 +17,5 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),  # Includes authentication routes (including password reset)
     path('auth/', include('djoser.urls.authtoken')),  # Includes token-based authentication routes
     path("vehicle-unavailability/", VehicleUnavailabilityListCreateView.as_view(), name="vehicle-unavailability"),
+    
 ]

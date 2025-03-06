@@ -99,7 +99,7 @@ class VehicleUnavailability(models.Model):
 
 
     def __str__(self):
-        return f"{self.vehicle.make} {self.vehicle.model} unavailable from {self.start_date} ro {self.end_date}"
+        return f"{self.vehicle.make} {self.vehicle.model} unavailable from {self.start_date} to {self.end_date}"
 
 
 
