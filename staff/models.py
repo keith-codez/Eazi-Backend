@@ -74,7 +74,7 @@ class VehicleImage(models.Model):
     image = models.ImageField(upload_to="vehicle_images/")
 
     def __str__(self):
-        return f"Image for {self.vehicle.brand} {self.vehicle.make}"
+        return f"Image for {self.vehicle.make} {self.vehicle.model}"
 
 
 
