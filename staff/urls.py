@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import register_manager, login_manager, VehicleViewSet, MaintenanceRecordViewSet, VehicleUnavailabilityListCreateView
+from .views import register_manager, login_manager, VehicleViewSet, MaintenanceRecordViewSet, VehicleUnavailabilityListCreateView, VehicleCreateView
 from django.contrib.auth import views as auth_views
 from . import views
 from rest_framework.routers import DefaultRouter
@@ -17,5 +17,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),  # Includes authentication routes (including password reset)
     path('auth/', include('djoser.urls.authtoken')),  # Includes token-based authentication routes
     path("vehicle-unavailability/", VehicleUnavailabilityListCreateView.as_view(), name="vehicle-unavailability"),
+
+    path('vehicles/add/', VehicleCreateView.as_view(), name='add-vehicle'),
     
 ]

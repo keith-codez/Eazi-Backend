@@ -56,14 +56,19 @@ class Vehicle(models.Model):
         ("private", "Privately Owned"),
     ]
 
+
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
+    manufacture_year = models.PositiveIntegerField()  # New field
     color = models.CharField(max_length=50)
     mileage = models.PositiveIntegerField()
+    mileage_allowance = models.PositiveIntegerField(default=0)  # New field
     ownership = models.CharField(max_length=10, choices=OWNERSHIP_CHOICES)
     price_per_day = models.DecimalField(max_digits=10, decimal_places=2)
+    deposit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New field
     maintenance_records = models.TextField(blank=True, null=True)
-    registration_number = models.CharField(max_length=20, unique=True)  # ✅ Vehicle Registration Field
+    registration_number = models.CharField(max_length=20, unique=True)
+    next_service_date = models.DateField(blank=True, null=True)  # New field
 
     def __str__(self):
         return f"{self.make} {self.model} {self.color} ({self.registration_number})"

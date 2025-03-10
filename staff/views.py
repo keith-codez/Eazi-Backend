@@ -55,3 +55,9 @@ class MaintenanceRecordViewSet(viewsets.ModelViewSet):
 class VehicleUnavailabilityListCreateView(generics.ListCreateAPIView):
     queryset = VehicleUnavailability.objects.all()
     serializer_class = VehicleUnavailabilitySerializer
+
+
+
+class VehicleCreateView(generics.CreateAPIView):
+    queryset = Vehicle.objects.all()
+    serializer_class = VehicleSerializer

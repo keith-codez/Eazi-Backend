@@ -40,7 +40,7 @@ class VehicleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vehicle
-        fields = ["id", "make", "model", "color", "mileage", "ownership", "maintenance_records", "images", "image_uploads"]
+        fields = ["id", "make", "model", "manufacture_year", "color", "mileage", "mileage_allowance", "ownership", "price_per_day", "deposit", "maintenance_records", "registration_number", "next_service_date", "images", "image_uploads"]
 
     def create(self, validated_data):
         images_data = validated_data.pop("image_uploads", [])
