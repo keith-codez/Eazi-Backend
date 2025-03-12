@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import register_manager, login_manager, VehicleViewSet, MaintenanceRecordViewSet, VehicleUnavailabilityListCreateView, VehicleCreateView
+from .views import register_manager, login_manager, VehicleViewSet, MaintenanceRecordViewSet, VehicleUnavailabilityListCreateView, VehicleCreateView, VehicleImageViewSet
 from django.contrib.auth import views as auth_views
 from . import views
 from rest_framework.routers import DefaultRouter
@@ -8,6 +8,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'vehicles', VehicleViewSet)
 router.register(r'maintenance', MaintenanceRecordViewSet)
+router.register(r'vehicle-images', VehicleImageViewSet)
 
 
 urlpatterns = [
