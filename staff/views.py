@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer
-from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage
+from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer
+from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Customer
 from rest_framework.parsers import MultiPartParser, FormParser
 
 
@@ -96,3 +96,8 @@ class VehicleImageViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         instance.delete()
         return Response({"message": "Image deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CustomerViewSet(viewsets.ModelViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer

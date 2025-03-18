@@ -108,3 +108,37 @@ class VehicleUnavailability(models.Model):
 
 
 
+class Customer(models.Model):
+    TITLE_CHOICES = [
+    ("MR", "Mr"),
+    ("MRS", "Mrs"),
+    ("MS", "Ms"),
+    ("DR", "Dr"),
+    ]
+    title = models.CharField(max_length=10, choices=TITLE_CHOICES, default='MR')
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15, unique=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    national_id = models.CharField(max_length=11, unique=True)
+    
+    # Driver’s License Image Upload
+    drivers_license = models.ImageField(upload_to="drivers_licenses/", blank=True, null=True)
+    
+    # Next of Kin 1
+    next_of_kin1_first_name = models.CharField(max_length=100)
+    next_of_kin1_last_name = models.CharField(max_length=100)
+    next_of_kin1_id_number = models.CharField(max_length=11)
+    next_of_kin1_phone = models.CharField(max_length=15)
+
+    # Next of Kin 2
+    next_of_kin2_first_name = models.CharField(max_length=100, blank=True, null=True)
+    next_of_kin2_last_name = models.CharField(max_length=100, blank=True, null=True)
+    next_of_kin2_id_number = models.CharField(max_length=11, blank=True, null=True)
+    next_of_kin2_phone = models.CharField(max_length=15, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_booking_date = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"

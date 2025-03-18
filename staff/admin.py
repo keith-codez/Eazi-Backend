@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability
+from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability, Customer
 
 User = get_user_model()
 
@@ -37,3 +37,10 @@ class VehicleUnavailabilityAdmin(admin.ModelAdmin):
     list_display = ("vehicle", "start_date", "end_date", "reason")
     list_filter = ("start_date", "end_date", "reason")
     search_fields = ("vehicle__make", "vehicle__model", "reason")
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ("first_name", "last_name", "phone_number","email","last_booking_date")
+    search_fields = ("first_name", "last_name", "phone_number", "email", "national_id")
+    list_filer = ("last_booking_date",)
