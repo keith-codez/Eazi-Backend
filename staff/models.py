@@ -121,6 +121,10 @@ class Customer(models.Model):
     phone_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(unique=True, blank=True, null=True)
     national_id = models.CharField(max_length=11, unique=True)
+    street_address = models.CharField(max_length=255, null=True)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, null=True)
+    country = models.CharField(max_length=100, null=True)
     
     # Driver’s License Image Upload
     drivers_license = models.ImageField(upload_to="drivers_licenses/", blank=True, null=True)
