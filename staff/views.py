@@ -1,6 +1,6 @@
 from rest_framework import status, viewsets, generics
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action 
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer
@@ -101,3 +101,20 @@ class VehicleImageViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+    def update(self, request, *args, **kwargs):
+        """Handles updating customer, including driver's license file handling"""
+        customer = self.get_object()
+
+        # Check if frontend sent a DELETE request for the driver's license
+        if request.data.get("drivers_license") == "DELETE":
+            customer.delete_drivers_license()
+
+        return super().update(request, *args, **kwargs)
+
+    @action(detail=True, methods=['DELETE'])
+    def delete_drivers_license(self, request, pk=None):
+        """Deletes only the driver's license image"""
+        customer = self.get_object()
+        customer.delete_drivers_license()
+        return Response({"message": "Driver's license deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

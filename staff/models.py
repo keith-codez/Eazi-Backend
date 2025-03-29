@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
+import os
+from django.conf import settings
 
 
 # Custom Staff model that extends AbstractUser
@@ -146,3 +148,12 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def delete_drivers_license(self):
+        """Deletes the driver's license file from storage"""
+        if self.drivers_license:
+            image_path = os.path.join(settings.MEDIA_ROOT, str(self.drivers_license))
+            if os.path.exists(image_path):
+                os.remove(image_path)
+            self.drivers_license = None
+            self.save()
