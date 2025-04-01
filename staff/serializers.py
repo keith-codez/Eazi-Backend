@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Customer
+from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Customer, Booking
 
 
 
@@ -114,3 +114,17 @@ class CustomerSerializer(serializers.ModelSerializer):
     next_of_kin2_phone = serializers.CharField(required=False, allow_blank=True)
 
     last_booking_date = serializers.DateField(required=False, allow_null=True)
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = "__all__"
+
+    # Allow missing fields by setting required=False
+    start_date = serializers.DateField(required=False, allow_null=False)
+    end_date = serializers.DateField(required=False, allow_null=False)
+    booking_status = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # Assuming status is a string field
+    customer = CustomerSerializer(required=True)
+    Vehicle = VehicleSerializer(required=True)
+

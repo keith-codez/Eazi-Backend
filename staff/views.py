@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, action 
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer
-from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Customer
+from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer, BookingSerializer
+from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Customer, Booking
 from rest_framework.parsers import MultiPartParser, FormParser
 
 
@@ -118,3 +118,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
         customer = self.get_object()
         customer.delete_drivers_license()
         return Response({"message": "Driver's license deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer  

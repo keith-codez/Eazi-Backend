@@ -157,3 +157,27 @@ class Customer(models.Model):
                 os.remove(image_path)
             self.drivers_license = None
             self.save()
+
+
+class Booking(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="bookings")
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name="bookings")
+    created_at = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    booking_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    booking_deposit = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=20, choices=[("mobile transfer", "Mobile Transfer"), ("debit_card", "Debit Card"), ("cash", "Cash")], default="cash") 
+    booking_status = models.CharField(max_length=20, choices=[("upcoming", "Upcoming"), ("completed", "Completed"), ("active", "Active"), ("canceled", "Canceled")], default="upcoming")
+    estimated_mileage = models.PositiveIntegerField(default=0)
+    destination = models.CharField(max_length=255, blank=True, null=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    discount_description = models.TextField(blank=True, null=True)
+    pickup_location = models.CharField(max_length=255, blank=True, null=True)
+    dropoff_location = models.CharField(max_length=255, blank=True, null=True)
+    pickup_time = models.TimeField(blank=True, null=True)
+    dropoff_time = models.TimeField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Booking for {self.customer} - {self.vehicle} from {self.start_date} to {self.end_date}"
