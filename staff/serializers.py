@@ -117,14 +117,29 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    customer = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all())  
+    vehicle = serializers.PrimaryKeyRelatedField(queryset=Vehicle.objects.all())
+    
+    customer_details = serializers.SerializerMethodField()
+    vehicle_details = serializers.SerializerMethodField()
+
     class Meta:
         model = Booking
-        fields = "__all__"
+        fields = '__all__'  # Includes both customer and vehicle IDs
+        extra_fields = ['customer_details', 'vehicle_details']  # Add full details separately
 
-    # Allow missing fields by setting required=False
-    start_date = serializers.DateField(required=False, allow_null=False)
-    end_date = serializers.DateField(required=False, allow_null=False)
-    booking_status = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # Assuming status is a string field
-    customer = CustomerSerializer(required=True)
-    Vehicle = VehicleSerializer(required=True)
+    def get_customer_details(self, obj):
+        """Return full customer details"""
+        return {
+            "id": obj.customer.id,
+            "first_name": obj.customer.first_name,
+            "last_name": obj.customer.last_name
+        } if obj.customer else None
 
+    def get_vehicle_details(self, obj):
+        """Return full vehicle details"""
+        return {
+            "id": obj.vehicle.id,
+            "make": obj.vehicle.make,
+            "model": obj.vehicle.model
+        } if obj.vehicle else None
