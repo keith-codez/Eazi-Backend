@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer, BookingSerializer
 from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Customer, Booking
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Sum, F
 
 
 
@@ -119,7 +120,37 @@ class CustomerViewSet(viewsets.ModelViewSet):
         customer.delete_drivers_license()
         return Response({"message": "Driver's license deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=True, methods=['get'])
+    def analytics(self, request, pk=None):
+        """Returns analytics for a specific customer."""
+        customer = self.get_object()
+
+        bookings = Booking.objects.filter(customer=customer)
+
+        total_bookings = bookings.count()
+
+        # Correct calculation for total spent
+        total_spent = bookings.aggregate(
+            total=Sum(F('booking_amount') + F('booking_deposit') - F('discount_amount'))
+        )['total'] or 0
+
+        mileage_result = bookings.aggregate(Sum('estimated_mileage'))
+        total_mileage = mileage_result.get('estimated_mileage__sum', 0)
+        
+        return Response({
+            "totalBookings": total_bookings,
+            "totalSpent": round(total_spent, 2),
+            "totalMileage": total_mileage
+        })
+
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer  
+
+    @action(detail=False, methods=['get'], url_path='customer/(?P<customer_id>\\d+)')
+    def customer_bookings(self, request, customer_id=None):
+        """Returns all bookings for a specific customer."""
+        bookings = self.queryset.filter(customer_id=customer_id)
+        serializer = self.get_serializer(bookings, many=True)
+        return Response(serializer.data)
