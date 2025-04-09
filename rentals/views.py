@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .models import BookingRequest
-from staff.models import Vehicle
-from .serializers import BookingRequestSerializer, PublicVehicleSerializer
+from staff.models import Vehicle, VehicleImage
+from .serializers import BookingRequestSerializer, PublicVehicleSerializer, PublicVehicleImageSerializer
 
 class BookingRequestViewSet(viewsets.ModelViewSet):
     queryset = BookingRequest.objects.all().order_by('-created_at')
@@ -20,3 +20,7 @@ class BookingRequestViewSet(viewsets.ModelViewSet):
 class PublicVehicleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = PublicVehicleSerializer
+
+class PublicVehicleImageViewSet(viewsets.ModelViewSet):
+    queryset = VehicleImage.objects.all()
+    serializer_class = PublicVehicleImageSerializer
