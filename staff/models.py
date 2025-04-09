@@ -167,7 +167,7 @@ class Booking(models.Model):
     end_date = models.DateField()
     booking_amount = models.DecimalField(max_digits=10, decimal_places=2)
     booking_deposit = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.CharField(max_length=20, choices=[("mobile transfer", "Mobile Transfer"), ("debit_card", "Debit Card"), ("cash", "Cash")], default="cash") 
+    payment_method = models.CharField(max_length=20, choices=[("mobile transfer", "Mobile Transfer"), ("debit card", "Debit Card"), ("cash", "Cash")], default="cash") 
     booking_status = models.CharField(max_length=20, choices=[("upcoming", "Upcoming"), ("completed", "Completed"), ("active", "Active"), ("canceled", "Canceled")], default="upcoming")
     estimated_mileage = models.PositiveIntegerField(default=0)
     destination = models.CharField(max_length=255, blank=True, null=True)
