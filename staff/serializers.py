@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Customer, Booking
+from rentals.models import BookingRequest
 
 
 
@@ -143,3 +144,10 @@ class BookingSerializer(serializers.ModelSerializer):
             "make": obj.vehicle.make,
             "model": obj.vehicle.model
         } if obj.vehicle else None
+
+
+
+class StaffBookingRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingRequest
+        fields = '__all__' 

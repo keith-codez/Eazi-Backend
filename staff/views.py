@@ -7,6 +7,8 @@ from .serializers import RegisterSerializer, VehicleSerializer, MaintenanceRecor
 from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Customer, Booking
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, F
+from rentals.models import BookingRequest
+from staff.serializers import StaffBookingRequestSerializer
 
 
 
@@ -154,3 +156,9 @@ class BookingViewSet(viewsets.ModelViewSet):
         bookings = self.queryset.filter(customer_id=customer_id)
         serializer = self.get_serializer(bookings, many=True)
         return Response(serializer.data)
+
+
+class StaffBookingRequestViewSet(viewsets.ModelViewSet):
+    queryset = BookingRequest.objects.all()
+    serializer_class = StaffBookingRequestSerializer
+    

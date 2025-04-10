@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability, Customer, Booking
 
+
 User = get_user_model()
 
 @admin.register(User)
@@ -51,3 +52,4 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = ("customer", "vehicle", "start_date", "end_date", "booking_status")
     list_filter = ("booking_status", "start_date", "end_date")
     search_fields = ("customer__first_name", "customer__last_name", "vehicle__make", "vehicle__model")
+

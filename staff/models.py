@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,  Group, Permission
 from django.db import models
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.dispatch import receiver
@@ -15,6 +15,20 @@ class Manager(AbstractUser):
     middle_name = models.CharField(max_length=150, blank=True, null=True)
     email = models.EmailField(unique=True)
 
+    groups = models.ManyToManyField(
+        Group,
+        related_name="manager_users",  # 👈 Make this unique
+        blank=True,
+        help_text="The groups this user belongs to.",
+        verbose_name="groups",
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name="manager_user_permissions",  # 👈 Make this unique
+        blank=True,
+        help_text="Specific permissions for this user.",
+        verbose_name="user permissions",
+    )
 
     def __str__(self):
         return self.username
@@ -168,7 +182,7 @@ class Booking(models.Model):
     booking_amount = models.DecimalField(max_digits=10, decimal_places=2)
     booking_deposit = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=[("mobile transfer", "Mobile Transfer"), ("debit card", "Debit Card"), ("cash", "Cash")], default="cash") 
-    booking_status = models.CharField(max_length=20, choices=[("upcoming", "Upcoming"), ("completed", "Completed"), ("active", "Active"), ("canceled", "Canceled")], default="upcoming")
+    booking_status = models.CharField(max_length=20, choices=[("confirmed", "Confirmed"), ("pending", "Pending"), ("completed", "Completed"), ("active", "Active"), ("canceled", "Canceled")], default="pending")
     estimated_mileage = models.PositiveIntegerField(default=0)
     destination = models.CharField(max_length=255, blank=True, null=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

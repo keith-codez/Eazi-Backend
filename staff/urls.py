@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import register_manager, login_manager, VehicleViewSet, MaintenanceRecordViewSet, VehicleUnavailabilityListCreateView, VehicleCreateView, VehicleImageViewSet, CustomerViewSet, BookingViewSet
+from .views import register_manager, login_manager, VehicleViewSet, MaintenanceRecordViewSet, VehicleUnavailabilityListCreateView, VehicleCreateView, VehicleImageViewSet, CustomerViewSet, BookingViewSet, StaffBookingRequestViewSet
 from django.contrib.auth import views as auth_views
 from . import views
 from rest_framework.routers import DefaultRouter
@@ -11,6 +11,7 @@ router.register(r'maintenance', MaintenanceRecordViewSet)
 router.register(r'vehicle-images', VehicleImageViewSet)
 router.register(r'customers', CustomerViewSet)
 router.register(r'bookings', BookingViewSet)
+router.register(r'booking-requests', StaffBookingRequestViewSet, basename='booking-request')
 
 
 urlpatterns = [
