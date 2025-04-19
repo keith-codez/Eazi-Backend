@@ -1,11 +1,34 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Customer, Booking
+from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Customer, Booking, Manager
 from rentals.models import BookingRequest
 
 
 
 User = get_user_model()
+
+class CustomerRegisterSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    phone_number = serializers.CharField()
+
+    def create(self, validated_data):
+        # Use email as the username (username field no longer exists)
+        user = Manager.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
+        )
+        Customer.objects.create(
+            user=user,
+            phone_number=validated_data['phone_number']
+        )
+        return user
+
+
 
 
 class RegisterSerializer(serializers.ModelSerializer):

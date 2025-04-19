@@ -9,29 +9,16 @@ from django.utils.html import strip_tags
 import os
 from django.conf import settings
 
-
-# Custom Staff model that extends AbstractUser
 class Manager(AbstractUser):
-    middle_name = models.CharField(max_length=150, blank=True, null=True)
+  # removes the username field
     email = models.EmailField(unique=True)
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
 
-    groups = models.ManyToManyField(
-        Group,
-        related_name="manager_users",  # 👈 Make this unique
-        blank=True,
-        help_text="The groups this user belongs to.",
-        verbose_name="groups",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name="manager_user_permissions",  # 👈 Make this unique
-        blank=True,
-        help_text="Specific permissions for this user.",
-        verbose_name="user permissions",
-    )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # username no longer needed
 
     def __str__(self):
-        return self.username
+        return self.email
 
 
 @receiver(reset_password_token_created)
