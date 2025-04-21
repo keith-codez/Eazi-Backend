@@ -10,7 +10,7 @@ import os
 from django.conf import settings
 
 class Manager(AbstractUser):
-  # removes the username field
+    username = None
     email = models.EmailField(unique=True)
     middle_name = models.CharField(max_length=100, blank=True, null=True)
 
