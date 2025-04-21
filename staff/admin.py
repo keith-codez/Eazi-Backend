@@ -5,9 +5,7 @@ from rentals.models import BookingRequest, Lead
 
 User = get_user_model()
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'is_staff', 'is_active')
+
 
 
 # ✅ Allows adding multiple images per vehicle

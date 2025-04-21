@@ -46,17 +46,17 @@ INSTALLED_APPS = [
 
     'rest_framework', 
     'rest_framework_simplejwt',
-    'django_rest_passwordreset',
     
     'rentals',
     'staff',
 ]
 
 
+AUTH_USER_MODEL = 'staff.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ), 
 }
 
@@ -156,14 +156,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'staff.Manager'
 
 
-
-DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'api/staff/auth/password/reset/confirm/{uid}/{token}',
-    'PASSWORD_RESET_URL': 'api/staff/auth/password/reset/',
-}
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

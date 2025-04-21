@@ -23,8 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/rentals/', include('rentals.urls')),
     path('api/staff/', include('staff.urls')),
-    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
-    path('api/', include('staff.auth_urls')),
 ]
 
 if settings.DEBUG:
