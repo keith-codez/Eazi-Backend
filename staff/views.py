@@ -3,15 +3,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, action 
 from django.contrib.auth import get_user_model, authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer, BookingSerializer, UserSerializer
+from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, CustomerSerializer, BookingSerializer, UserSerializer,  StaffBookingRequestSerializer
 from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Customer, Booking, User
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, F
 from rentals.models import BookingRequest
-from staff.serializers import StaffBookingRequestSerializer
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.models import Token as DRFToken
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -34,10 +33,11 @@ class UserLoginView(ObtainAuthToken):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            token, created = Token.objects.get_or_create(user=user)
+            print("DRF is:", DRFToken)
+            token, created = DRFToken.objects.get_or_create(user=user)
             if created:
                 token.delete()  # Delete the token if it was already created
-                token = Token.objects.create(user=user)
+                token = DRFToken.objects.create(user=user)
             return Response({'token': token.key, 'username': user.username, 'role': user.role})
         else:
             return Response({'message': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -50,7 +50,7 @@ class UserLogoutView(APIView):
     def post(self, request):
         print(request.headers) 
         token_key = request.auth.key
-        token = Token.objects.get(key=token_key)
+        token = DRFToken.objects.get(key=token_key)
         token.delete()
 
         return Response({'detail': 'Successfully logged out.'})

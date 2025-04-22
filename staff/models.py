@@ -7,6 +7,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 import os
 from django.conf import settings
+from rest_framework.authtoken.models import Token
+
+
+
 
 class User(AbstractUser):
     ROLE_CHOICES = (
