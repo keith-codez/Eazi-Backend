@@ -1,5 +1,6 @@
 from django.db import models
-from staff.models import Vehicle, Customer 
+from staff.models import Vehicle
+from regulator.models import Customer
 
 
 

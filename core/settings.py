@@ -49,14 +49,15 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rentals',
     'staff',
+    'regulator',
 ]
 
 
-AUTH_USER_MODEL = 'staff.User'
+AUTH_USER_MODEL = 'regulator.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+          'rest_framework_simplejwt.authentication.JWTAuthentication',
     ), 
 }
 

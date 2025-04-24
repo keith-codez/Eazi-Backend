@@ -1,21 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability, Customer, Booking, User
+from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability, Customer, Booking
 from rentals.models import BookingRequest, Lead
 from django.contrib.auth.admin import UserAdmin
-
-class CustomUserAdmin(UserAdmin):
-    # Add 'role' to the fieldsets to show it in the admin form
-    fieldsets = UserAdmin.fieldsets + (
-        ('Custom Fields', {'fields': ('role',)}),
-    )
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Custom Fields', {'fields': ('role',)}),
-    )
-    list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff')
-    list_filter = ('role', 'is_staff')
-
-admin.site.register(User, CustomUserAdmin)
 
 
 # ✅ Allows adding multiple images per vehicle
