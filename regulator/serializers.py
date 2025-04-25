@@ -1,22 +1,73 @@
 from rest_framework import serializers
-from .models import User, Customer
+from .models import User, Customer, Agency, Agent
 from django.contrib.auth import authenticate
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class CustomerRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'role')
+        fields = ['username', 'email', 'first_name', 'last_name', 'password']
 
     def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.role = 'CUSTOMER'
+        user.save()
+
+        # Create Agent profile with the given first_name, last_name, and user reference
+        Agent.objects.create(user=user, first_name=validated_data['first_name'], last_name=validated_data['last_name'])
+        
+        return user
+
+
+class AgentRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.role = 'AGENT'
+        user.save()
+
+        # Create Agent profile with the given first_name, last_name, and user reference
+        Agent.objects.create(user=user, first_name=validated_data['first_name'], last_name=validated_data['last_name'])
+        
+        return user
+
+
+class AgencyRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    name = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'name')
+
+    def create(self, validated_data):
+        agency_name = validated_data.pop('name')
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
-            role=validated_data['role']
+            role='agency'
         )
+        Agency.objects.create(name=agency_name, created_by=user)
         return user
+
+
 
 
 class LoginSerializer(serializers.Serializer):
@@ -54,3 +105,16 @@ class CustomerSerializer(serializers.ModelSerializer):
     next_of_kin2_phone = serializers.CharField(required=False, allow_blank=True)
 
     last_booking_date = serializers.DateField(required=False, allow_null=True)
+
+
+
+class AgencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agency
+        fields = "__all__"
+
+
+class AgentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agent
+        fields = "__all__"

@@ -1,17 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
-from .serializers import UserRegistrationSerializer, LoginSerializer, CustomerSerializer
+from .serializers import AgentRegistrationSerializer, LoginSerializer, CustomerSerializer, AgencyRegistrationSerializer, CustomerRegistrationSerializer 
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, Customer
 from staff.models import Booking 
 from rest_framework.decorators import api_view, action 
+from rest_framework.views import APIView
 
 
-
-
-class RegisterView(generics.CreateAPIView):
-    serializer_class = UserRegistrationSerializer
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -77,3 +74,43 @@ class CustomerViewSet(viewsets.ModelViewSet):
             "totalSpent": round(total_spent, 2),
             "totalMileage": total_mileage
         })
+
+
+class CustomerRegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        serializer = CustomerRegistrationSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Customer registered successfully'}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class AgentRegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        serializer = AgentRegistrationSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Agent registered successfully'}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AgencyRegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        serializer = AgencyRegistrationSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Agency registered successfully'}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

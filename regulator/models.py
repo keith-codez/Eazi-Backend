@@ -1,15 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 class User(AbstractUser):
     ROLE_CHOICES = (
         ("customer", "Customer"),
-        ("staff", "Staff"),
+        ("agent", "Agent"),
+        ("agency", "Agency"),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-
-
 
 class Customer(models.Model):
     TITLE_CHOICES = [
@@ -58,3 +56,28 @@ class Customer(models.Model):
                 os.remove(image_path)
             self.drivers_license = None
             self.save()
+
+
+
+class Agency(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    number_of_employees = models.IntegerField(default=1)
+    created_by = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agency_profile')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Agent(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agent_profile')
+    first_name = models.CharField(max_length=100, null=True,)
+    last_name = models.CharField(max_length=100, null=True,)
+    agency = models.ForeignKey(Agency, on_delete=models.SET_NULL, null=True, blank=True, related_name='agents')
+    phone_number = models.CharField(max_length=15, unique=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    street_address = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
