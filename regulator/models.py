@@ -10,6 +10,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
 class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile', null=True, blank=True)
     TITLE_CHOICES = [
     ("MR", "Mr"),
     ("MRS", "Mrs"),
@@ -21,7 +22,7 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(unique=True, blank=True, null=True)
-    national_id = models.CharField(max_length=11, unique=True)
+    national_id = models.CharField(max_length=30, null=True, blank=True, unique=False)  # remove unique=True
     street_address = models.CharField(max_length=255, null=True)
     address_line2 = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, null=True)

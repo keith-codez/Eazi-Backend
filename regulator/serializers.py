@@ -1,28 +1,47 @@
 from rest_framework import serializers
 from .models import User, Customer, Agency, Agent
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
+
+
+User = get_user_model()
 
 class CustomerRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
+    phone_number = serializers.CharField(required=True)  # manually declared field
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'password']  # << ADD phone_number here
 
     def create(self, validated_data):
         password = validated_data.pop('password')
+        phone_number = validated_data.pop('phone_number')
+
         user = User(**validated_data)
         user.set_password(password)
-        user.role = 'CUSTOMER'
+        user.role = 'customer'
         user.save()
 
-        # Create Agent profile with the given first_name, last_name, and user reference
-        Agent.objects.create(user=user, first_name=validated_data['first_name'], last_name=validated_data['last_name'])
-        
+        # Now create the Customer profile
+        Customer.objects.create(
+            user=user,
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            email=validated_data['email'],
+            phone_number=phone_number,
+            national_id="",
+            next_of_kin1_first_name="",
+            next_of_kin1_last_name="",
+            next_of_kin1_id_number="",
+            next_of_kin1_phone="",
+        )
+
         return user
+
+
 
 
 class AgentRegistrationSerializer(serializers.ModelSerializer):
@@ -75,17 +94,36 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, data):
-        user = authenticate(username=data['username'], password=data['password'])
+        username_or_email = data['username']
+        password = data['password']
+
+        # Check if input looks like an email
+        if '@' in username_or_email:
+            try:
+                user_obj = User.objects.get(email=username_or_email)
+                username = user_obj.username  # get their username internally
+            except User.DoesNotExist:
+                raise serializers.ValidationError("Invalid credentials")
+        else:
+            username = username_or_email
+
+        user = authenticate(username=username, password=password)
         if not user:
             raise serializers.ValidationError("Invalid credentials")
-        return user
 
+        return user
 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = "__all__"
+
+
+    def validate_national_id(self, value):
+        if value and Customer.objects.filter(national_id=value).exists():
+            raise serializers.ValidationError("Customer with this National ID already exists.")
+        return value
 
     # Allow missing fields by setting required=False
     title = serializers.CharField(required=False, allow_null=True, allow_blank=True)
