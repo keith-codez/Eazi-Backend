@@ -7,7 +7,7 @@ from .models import User, Customer
 from staff.models import Booking 
 from rest_framework.decorators import api_view, action 
 from rest_framework.views import APIView
-
+from django.db.models import Sum, F
 
 
 class LoginView(generics.GenericAPIView):
