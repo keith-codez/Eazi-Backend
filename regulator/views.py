@@ -8,6 +8,9 @@ from staff.models import Booking
 from rest_framework.decorators import api_view, action 
 from rest_framework.views import APIView
 from django.db.models import Sum, F
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class LoginView(generics.GenericAPIView):
@@ -34,6 +37,18 @@ class LoginView(generics.GenericAPIView):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    authentication_classes = [JWTAuthentication, SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if hasattr(user, "agent"):
+            agent = user.agent
+            serializer.save(related_agent=agent, related_agency=agent.agency)
+        else:
+            serializer.save()
+
+
 
     def update(self, request, *args, **kwargs):
         """Handles updating customer, including driver's license file handling"""
@@ -75,6 +90,16 @@ class CustomerViewSet(viewsets.ModelViewSet):
             "totalMileage": total_mileage
         })
 
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == 'agent':
+            return Customer.objects.filter(agent__user=user)
+        elif user.role == 'agency':
+            return Customer.objects.filter(agent__agency__user=user)
+        elif user.role == 'admin':
+            return Customer.objects.all()
+        return Customer.objects.none()
 
 class CustomerRegisterView(APIView):
     def post(self, request, *args, **kwargs):

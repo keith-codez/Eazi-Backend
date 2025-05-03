@@ -27,6 +27,20 @@ class Customer(models.Model):
     address_line2 = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, null=True)
     country = models.CharField(max_length=100, null=True)
+
+    related_agent = models.ForeignKey(
+        'regulator.Agent',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='customers'
+    )
+    related_agency = models.ForeignKey(
+        'regulator.Agency',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='customers'
+    )
+    is_public_only = models.BooleanField(default=True)
     
     # Driver’s License Image Upload
     drivers_license = models.ImageField(upload_to="drivers_licenses/", blank=True, null=True)

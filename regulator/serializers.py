@@ -58,7 +58,7 @@ class AgentRegistrationSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
-        user.role = 'AGENT'
+        user.role = 'agent'
         user.save()
 
         # Create Agent profile with the given first_name, last_name, and user reference
@@ -117,7 +117,7 @@ class LoginSerializer(serializers.Serializer):
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = "__all__"
+        exclude = ['related_agent', 'related_agency']  # EXCLUDE here instead of "__all__"
 
 
     def validate_national_id(self, value):
