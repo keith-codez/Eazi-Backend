@@ -8,13 +8,15 @@ from staff.models import Booking
 from rest_framework.decorators import api_view, action 
 from rest_framework.views import APIView
 from django.db.models import Sum, F
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+    permission_classes = [AllowAny] 
+    authentication_classes = []      
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -38,7 +40,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     authentication_classes = [JWTAuthentication, SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user = self.request.user

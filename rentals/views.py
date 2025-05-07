@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class BookingRequestViewSet(viewsets.ModelViewSet):
@@ -25,6 +26,8 @@ class BookingRequestViewSet(viewsets.ModelViewSet):
 class PublicVehicleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = PublicVehicleSerializer
+    permission_classes = [AllowAny] 
+    authentication_classes = [] 
 
 class PublicVehicleImageViewSet(viewsets.ModelViewSet):
     queryset = VehicleImage.objects.all()
