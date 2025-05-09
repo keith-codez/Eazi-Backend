@@ -96,12 +96,13 @@ class CustomerViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         if user.role == 'agent':
-            return Customer.objects.filter(agent__user=user)
+            return Customer.objects.filter(related_agent__user=user)
         elif user.role == 'agency':
-            return Customer.objects.filter(agent__agency__user=user)
+            return Customer.objects.filter(related_agency__created_by=user)
         elif user.role == 'admin':
             return Customer.objects.all()
         return Customer.objects.none()
+
 
 class CustomerRegisterView(APIView):
     def post(self, request, *args, **kwargs):
