@@ -34,6 +34,6 @@ urlpatterns = [
   path('register/agency/', AgencyRegisterView.as_view(), name='register-agency'),
   path('login/', LoginView.as_view(), name='login'),
   path('', include(router.urls)),
-  path('regulator/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-  path('regulator/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+  path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+  path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

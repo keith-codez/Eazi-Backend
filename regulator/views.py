@@ -40,11 +40,12 @@ class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     authentication_classes = [JWTAuthentication, SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user = self.request.user
         if hasattr(user, "agent"):
+            print("user agent seen")
             agent = user.agent
             serializer.save(related_agent=agent, related_agency=agent.agency)
         else:
