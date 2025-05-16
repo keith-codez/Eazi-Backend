@@ -29,9 +29,11 @@ ALLOWED_HOSTS = []
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000","http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:5173",
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -64,6 +66,14 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_COOKIE": "access_token",  # Custom cookie name
+    "AUTH_COOKIE_REFRESH": "refresh_token",
+    "AUTH_COOKIE_SECURE": False,  # True in production (HTTPS)
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "None",  # Or 'Strict' in production
 }
 
 
@@ -77,6 +87,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "regulator.middleware.JWTAuthenticationMiddleware",
 ]
 
 ROOT_URLCONF = 'core.urls'

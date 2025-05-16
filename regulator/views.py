@@ -15,25 +15,46 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-    permission_classes = [AllowAny] 
-    authentication_classes = []      
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         user = serializer.validated_data
         refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+        access = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        response = Response({
             'user': {
                 'id': user.id,
                 'username': user.username,
                 'email': user.email,
-                'role': user.role
+                'role': user.role,
             }
-        })
+        }, status=status.HTTP_200_OK)
 
+        # ✅ Set secure HttpOnly cookies with the actual tokens
+        response.set_cookie(
+            key='access_token',
+            value=access,
+            httponly=True,
+            secure=True,  # Set to False in local dev if not using HTTPS, but must be True in production
+            samesite='None',  # Needed for cross-site usage like React frontend
+            path='/'
+        )
+        response.set_cookie(
+            key='refresh_token',
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite='None',
+            path='/'
+        )
+
+        return response
 
 
 class CustomerViewSet(viewsets.ModelViewSet):

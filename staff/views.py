@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from regulator.serializers import CustomerSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication
+from regulator.permissions import IsAgent
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
@@ -22,7 +23,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     parser_classes = (MultiPartParser, FormParser)  # ✅ Allow image uploads
     authentication_classes = [JWTAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAgent]
 
     def update(self, request, *args, **kwargs):
         vehicle = self.get_object()
