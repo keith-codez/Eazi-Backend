@@ -9,6 +9,15 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
+    def get_role(self):
+        if hasattr(self, "customer_profile"):
+            return "customer"
+        elif hasattr(self, "agent_profile"):
+            return "agent"
+        elif hasattr(self, "agency_profile"):
+            return "agency"
+        return "unknown"
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile', null=True, blank=True)
     TITLE_CHOICES = [

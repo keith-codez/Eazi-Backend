@@ -5,7 +5,7 @@ from .serializers import AgentRegistrationSerializer, LoginSerializer, CustomerS
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, Customer
 from staff.models import Booking 
-from rest_framework.decorators import api_view, action 
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.views import APIView
 from django.db.models import Sum, F
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -164,3 +164,13 @@ class AgencyRegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def me_view(request):
+    user = request.user
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "role": user.get_role(),
+    })
