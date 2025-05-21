@@ -11,6 +11,17 @@ from django.db.models import Sum, F
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({'detail': 'CSRF cookie set'})
 
 
 class LoginView(generics.GenericAPIView):
@@ -174,3 +185,30 @@ def me_view(request):
         "email": user.email,
         "role": user.get_role(),
     })
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token', None)
+
+        if not refresh_token:
+            return Response({"detail": "Refresh token not provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data={"refresh": refresh_token})
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        access_token = serializer.validated_data["access"]
+
+        response = Response({"access": access_token}, status=status.HTTP_200_OK)
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite='None',
+            path='/',
+        )
+        return response

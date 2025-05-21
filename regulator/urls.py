@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (
-    CustomerRegisterView, AgentRegisterView, AgencyRegisterView, LoginView, CustomerViewSet, me_view
+    CustomerRegisterView, AgentRegisterView, AgencyRegisterView, LoginView, CustomerViewSet, me_view, get_csrf_token,  CookieTokenRefreshView
 )
 from rest_framework.routers import DefaultRouter
 from staff.views import (
@@ -13,9 +13,7 @@ from staff.views import (
 from rentals.views import PublicVehicleViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
-    TokenRefreshView,
 )
-
 
 
 router = DefaultRouter()
@@ -35,6 +33,7 @@ urlpatterns = [
   path('login/', LoginView.as_view(), name='login'),
   path('', include(router.urls)),
   path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-  path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+  path('token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
   path("auth/me/", me_view, name="me"),
+  path("csrf/", get_csrf_token, name="csrf"),
 ]
