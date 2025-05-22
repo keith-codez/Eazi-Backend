@@ -64,6 +64,7 @@ AUTH_USER_MODEL = 'regulator.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
           'regulator.authentication.CookieJWTAuthentication',
+          'regulator.authentication.CsrfExemptSessionAuthentication',
     ), 
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -71,7 +72,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -89,7 +90,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -188,7 +188,8 @@ EMAIL_HOST_USER = "nyikayedu00"
 EMAIL_HOST_PASSWORD = "onot hqsx apxh eidv "
 
 
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = None
 CSRF_COOKIE_HTTPONLY = False  # Crucial for React to read and send the CSRF token
 CSRF_COOKIE_SECURE = False  # Set True in production (for HTTPS)
+SESSION_COOKIE_SECURE = False

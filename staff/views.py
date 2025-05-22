@@ -16,13 +16,14 @@ from regulator.serializers import CustomerSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication
 from regulator.permissions import IsAgent
+from regulator.authentication import CookieJWTAuthentication
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
     parser_classes = (MultiPartParser, FormParser)  # ✅ Allow image uploads
-    authentication_classes = [JWTAuthentication, SessionAuthentication]
+    authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated, IsAgent]
 
     def update(self, request, *args, **kwargs):
