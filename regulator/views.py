@@ -17,6 +17,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
+from regulator.authentication import CookieJWTAuthentication
 
 
 @ensure_csrf_cookie
@@ -71,7 +72,7 @@ class LoginView(generics.GenericAPIView):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    authentication_classes = [JWTAuthentication, SessionAuthentication, BasicAuthentication]
+    authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):

@@ -144,6 +144,12 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     last_booking_date = serializers.DateField(required=False, allow_null=True)
 
+    def validate_national_id(self, value):
+        customer_id = self.instance.id if self.instance else None
+        if Customer.objects.exclude(id=customer_id).filter(national_id=value).exists():
+            raise serializers.ValidationError("Customer with this National ID already exists.")
+        return value
+
 
 
 class AgencySerializer(serializers.ModelSerializer):
