@@ -14,6 +14,9 @@ from rentals.views import PublicVehicleViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
+from .analytics.analytics import AnalyticsAPIView
+
+
 
 
 router = DefaultRouter()
@@ -36,4 +39,5 @@ urlpatterns = [
   path('token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
   path("auth/me/", me_view, name="me"),
   path("csrf/", get_csrf_token, name="csrf"),
+  path("analytics/", AnalyticsAPIView.as_view(), name="analytics"),
 ]
