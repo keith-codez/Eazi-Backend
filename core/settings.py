@@ -91,11 +91,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # <- Django sets request.user here
+    "regulator.middleware.JWTAuthenticationMiddleware",          # <- Your middleware can override only if needed
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "regulator.middleware.JWTAuthenticationMiddleware",
 ]
+
 
 ROOT_URLCONF = 'core.urls'
 
