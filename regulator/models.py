@@ -39,11 +39,11 @@ class Customer(models.Model):
     city = models.CharField(max_length=100, null=True)
     country = models.CharField(max_length=100, null=True)
     lead = models.ForeignKey("rentals.Lead", null=True, blank=True, on_delete=models.SET_NULL, related_name="converted_customer")
-    related_agent = models.ForeignKey(
+    agents = models.ManyToManyField(
         'regulator.Agent',
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='customers'
+        related_name='customers',
+        blank=True,
+        help_text="Agents linked to this customer"
     )
     related_agency = models.ForeignKey(
         'regulator.Agency',
