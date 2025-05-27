@@ -7,12 +7,15 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from regulator.permissions import IsCustomer
+from rest_framework.exceptions import PermissionDenied
+
 
 
 class BookingRequestViewSet(viewsets.ModelViewSet):
     queryset = BookingRequest.objects.all().order_by('-created_at')
     serializer_class = BookingRequestSerializer
-    permission_classes = []
+    permission_classes = [IsAuthenticated, IsCustomer]
 
     def get_queryset(self):
         # Optionally: show only reviewed/unreviewed based on query param
@@ -21,6 +24,11 @@ class BookingRequestViewSet(viewsets.ModelViewSet):
         if reviewed in ["true", "false"]:
             queryset = queryset.filter(is_reviewed=(reviewed == "true"))
         return queryset
+    
+    def create(self, validated_data):
+        request = self.context['request']
+        if not IsCustomer().has_permission(request, self):
+            raise PermissionDenied("Only customers can submit booking requests.")
 
 
 class PublicVehicleViewSet(viewsets.ReadOnlyModelViewSet):

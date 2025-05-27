@@ -213,3 +213,12 @@ class CookieTokenRefreshView(TokenRefreshView):
             path='/',
         )
         return response
+    
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/")
+    return response

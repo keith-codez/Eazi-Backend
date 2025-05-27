@@ -1,7 +1,7 @@
 from django.db import models
 from staff.models import Vehicle
 from regulator.models import Customer
-
+from regulator.models import User
 
 
 class Lead(models.Model):
@@ -17,6 +17,7 @@ class Lead(models.Model):
 
 
 class BookingRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booking_requests')  # NEW
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, null=True, blank=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='booking_requests')
     start_date = models.DateField()

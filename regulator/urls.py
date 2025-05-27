@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (
-    CustomerRegisterView, AgentRegisterView, AgencyRegisterView, LoginView, CustomerViewSet, me_view, get_csrf_token,  CookieTokenRefreshView
+    CustomerRegisterView, AgentRegisterView, AgencyRegisterView, LoginView, CustomerViewSet, me_view, get_csrf_token,  CookieTokenRefreshView, logout_view
 )
 from rest_framework.routers import DefaultRouter
 from staff.views import (
@@ -34,6 +34,7 @@ urlpatterns = [
   path('register/agent/', AgentRegisterView.as_view(), name='register-agent'),
   path('register/agency/', AgencyRegisterView.as_view(), name='register-agency'),
   path('login/', LoginView.as_view(), name='login'),
+  path("logout/", logout_view, name="logout"),
   path('', include(router.urls)),
   path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
   path('token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
