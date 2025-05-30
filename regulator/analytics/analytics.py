@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count
 
-from rentals.models import Lead, BookingRequest
+from rentals.models import BookingRequest
 from staff.models import Booking
 from regulator.models import Customer
+from regulator.models import User
 
 
 class AnalyticsAPIView(APIView):
@@ -27,10 +28,18 @@ class AnalyticsAPIView(APIView):
             .annotate(booking_count=Count('id'))\
             .filter(booking_count=1).count()
 
-        # Leads and conversions
-        total_leads = Lead.objects.count()
-        converted_leads = Customer.objects.filter(lead__isnull=False).count()
-        conversion_rate = round((converted_leads / total_leads) * 100, 2) if total_leads else 0
+        # Leads = users with booking requests but no Customer profile
+        leads_qs = User.objects.filter(
+            role='customer',
+            booking_requests__isnull=False
+        ).exclude(customer__isnull=False).distinct()
+
+        total_leads = leads_qs.count()
+
+        # Converted = users with a Customer profile
+        converted_leads = Customer.objects.count()
+
+        conversion_rate = round((converted_leads / (total_leads + converted_leads)) * 100, 2) if (total_leads + converted_leads) else 0
 
         # Example chart dummy data (replace later)
         booking_frequency = [{"name": "1", "value": 20}, {"name": "2-3", "value": 40}]

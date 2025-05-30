@@ -10,7 +10,7 @@ from staff.views import (
     BookingViewSet,
     StaffBookingRequestViewSet
 )
-from rentals.views import PublicVehicleViewSet
+from rentals.views import PublicVehicleViewSet, StaffBookingRequestViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
@@ -27,7 +27,7 @@ router.register(r"maintenance", MaintenanceRecordViewSet, basename="maintenance"
 router.register(r"bookings", BookingViewSet, basename="booking")
 router.register(r"booking-requests", StaffBookingRequestViewSet, basename="booking-request")
 router.register(r"public-vehicles", PublicVehicleViewSet, basename="public-vehicles")
-
+router.register(r'staff-booking-requests', StaffBookingRequestViewSet, basename='staff-booking-request')
 
 urlpatterns = [
   path('register/customer/', CustomerRegisterView.as_view(), name='register-customer'),

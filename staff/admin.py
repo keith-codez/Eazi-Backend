@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from .models import Vehicle, MaintenanceRecord, VehicleImage, VehicleUnavailability, Customer, Booking
-from rentals.models import BookingRequest, Lead
+from rentals.models import BookingRequest
 from django.contrib.auth.admin import UserAdmin
 
 
@@ -51,12 +51,5 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(BookingRequest)
 class BookingRequestAdmin(admin.ModelAdmin):
-    list_display = ['vehicle', 'start_date', 'end_date', 'lead', 'is_reviewed', 'created_at']
-    search_fields = ['lead__first_name', 'lead__last_name', 'lead__email']
-    autocomplete_fields = ['vehicle', 'lead']
-
-
-@admin.register(Lead)
-class LeadAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'email', 'phone_number', 'created_at']
-    search_fields = ['first_name', 'last_name', 'email']
+    list_display = ['vehicle', 'start_date', 'end_date', 'is_reviewed', 'created_at']
+    autocomplete_fields = ['vehicle']

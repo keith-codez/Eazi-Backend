@@ -38,7 +38,6 @@ class Customer(models.Model):
     address_line2 = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, null=True)
     country = models.CharField(max_length=100, null=True)
-    lead = models.ForeignKey("rentals.Lead", null=True, blank=True, on_delete=models.SET_NULL, related_name="converted_customer")
     agents = models.ManyToManyField(
         'regulator.Agent',
         related_name='customers',
