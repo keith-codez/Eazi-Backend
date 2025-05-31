@@ -3,7 +3,7 @@ from .models import BookingRequest
 from staff.models import Vehicle, VehicleImage  # For nested data
 from regulator.serializers import CustomerMiniSerializer, CustomerSerializer
 from regulator.models import Customer
-
+from rest_framework.exceptions import NotAuthenticated
 
 
 class VehicleMiniSerializer(serializers.ModelSerializer):
@@ -35,20 +35,22 @@ class BookingRequestSerializer(serializers.ModelSerializer):
 
 
     def create(self, validated_data):
-        request = self.context['request']
-        vehicle = validated_data.pop('vehicle_id')
+        request = self.context.get('request')
+        
+        if not request or not request.user or not request.user.is_authenticated:
+            raise NotAuthenticated("You must be logged in as a customer to submit a booking request.")
 
-        # Optional: infer lead from logged-in customer
         user = request.user
-        customer = getattr(user, 'customer', None)
+        customer = getattr(user, 'customer_profile', None)
 
         if not customer:
             raise serializers.ValidationError("Booking requests must come from a registered customer.")
 
-        # Option 1: link directly to customer (if lead model is removed)
-        # Option 2: create a Lead object if keeping it as intermediate
+        vehicle = validated_data.pop('vehicle_id')
 
         return BookingRequest.objects.create(
+            user=user,
+            customer=customer,
             vehicle=vehicle,
             **validated_data
         )

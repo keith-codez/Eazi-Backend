@@ -2,7 +2,7 @@ from django.db import models
 from staff.models import Vehicle
 from regulator.models import Customer
 from regulator.models import User
-
+from regulator.models import Customer  # Ensure this import is present
 
 class BookingRequest(models.Model):
     STATUS_CHOICES = [
@@ -12,6 +12,7 @@ class BookingRequest(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booking_requests')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='booking_requests')
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='booking_requests')
     start_date = models.DateField()
     end_date = models.DateField()
