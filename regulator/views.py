@@ -139,6 +139,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
 
 class CustomerRegisterView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         serializer = CustomerRegistrationSerializer(data=data)

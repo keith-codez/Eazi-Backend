@@ -25,11 +25,8 @@ class BookingRequestViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(is_reviewed=(reviewed == "true"))
         return queryset
     
-    def create(self, validated_data):
-        request = self.context['request']
-        if not IsCustomer().has_permission(request, self):
-            raise PermissionDenied("Only customers can submit booking requests.")
-
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 class PublicVehicleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Vehicle.objects.all()

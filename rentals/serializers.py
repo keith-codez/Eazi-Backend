@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from .models import BookingRequest
 from staff.models import Vehicle, VehicleImage  # For nested data
+from regulator.serializers import CustomerMiniSerializer, CustomerSerializer
+from regulator.models import Customer
+
+
 
 class VehicleMiniSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,9 +15,7 @@ class VehicleMiniSerializer(serializers.ModelSerializer):
 class BookingRequestSerializer(serializers.ModelSerializer):
     vehicle = VehicleMiniSerializer(read_only=True)
     vehicle_id = serializers.PrimaryKeyRelatedField(queryset=Vehicle.objects.all(), write_only=True)
-    first_name = serializers.CharField(source='user.first_name', read_only=True)
-    last_name = serializers.CharField(source='user.last_name', read_only=True)
-    phone = serializers.CharField(source='user.phone', read_only=True)
+    customer = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -28,10 +30,9 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             'is_reviewed',
             'status',
             'staff_notes',
-            'first_name',
-            'last_name',
-            'phone'
+            'customer'
         ]
+
 
     def create(self, validated_data):
         request = self.context['request']
@@ -52,7 +53,18 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             **validated_data
         )
 
-
+    def get_customer(self, obj):
+        user = obj.user
+        try:
+            customer = user.customer_profile
+            return {
+                "first_name": customer.first_name,
+                "last_name": customer.last_name,
+                "email": customer.email,
+                "phone_number": customer.phone_number,
+            }
+        except Customer.DoesNotExist:
+            return None
 
 class PublicVehicleImageSerializer(serializers.ModelSerializer):
     class Meta:

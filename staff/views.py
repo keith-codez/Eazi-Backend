@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, action 
 from django.contrib.auth import get_user_model, authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, BookingSerializer, StaffBookingRequestSerializer
+from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, BookingSerializer
 from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Booking
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, F
@@ -90,7 +90,3 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class StaffBookingRequestViewSet(viewsets.ModelViewSet):
-    queryset = BookingRequest.objects.all()
-    serializer_class = StaffBookingRequestSerializer
-    

@@ -10,11 +10,11 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
-    phone_number = serializers.CharField(required=True)  # manually declared field
+    phone_number = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'password']  # << ADD phone_number here
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'password']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -25,12 +25,11 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
         user.role = 'customer'
         user.save()
 
-        # Now create the Customer profile
         Customer.objects.create(
             user=user,
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            email=validated_data['email'],
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
             phone_number=phone_number,
             national_id="",
             next_of_kin1_first_name="",
@@ -40,7 +39,6 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
         )
 
         return user
-
 
 
 
@@ -162,3 +160,9 @@ class AgentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agent
         fields = "__all__"
+
+
+class CustomerMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone']

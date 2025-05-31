@@ -106,8 +106,3 @@ class BookingSerializer(serializers.ModelSerializer):
         } if obj.vehicle else None
 
 
-
-class StaffBookingRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BookingRequest
-        fields = '__all__' 
