@@ -47,11 +47,13 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Booking requests must come from a registered customer.")
 
         vehicle = validated_data.pop('vehicle_id')
+        agent = vehicle.agent  # Auto-assign agent based on vehicle
 
         return BookingRequest.objects.create(
             user=user,
             customer=customer,
             vehicle=vehicle,
+            agent=agent,
             **validated_data
         )
 

@@ -2,7 +2,8 @@ from django.db import models
 from staff.models import Vehicle
 from regulator.models import Customer
 from regulator.models import User
-from regulator.models import Customer  # Ensure this import is present
+from regulator.models import Customer 
+from regulator.models import Agent 
 
 class BookingRequest(models.Model):
     STATUS_CHOICES = [
@@ -23,6 +24,13 @@ class BookingRequest(models.Model):
 
     is_reviewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    agent = models.ForeignKey(
+        Agent,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='booking_requests',
+        help_text="Agent who accepted this request"
+    )
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.vehicle}"

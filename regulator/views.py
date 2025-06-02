@@ -130,7 +130,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         if user.role == 'agent':
-            return Customer.objects.filter(related_agent__user=user)
+            return Customer.objects.filter(agents__user=user)
         elif user.role == 'agency':
             return Customer.objects.filter(related_agency__created_by=user)
         elif user.role == 'admin':

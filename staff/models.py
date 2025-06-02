@@ -8,7 +8,7 @@ from django.utils.html import strip_tags
 import os
 from django.conf import settings
 from rest_framework.authtoken.models import Token
-from regulator.models import Customer
+from regulator.models import Customer, Agent
 
 
 
@@ -22,7 +22,7 @@ class Vehicle(models.Model):
         ("private", "Privately Owned"),
     ]
 
-
+    agent = models.ForeignKey(Agent, on_delete=models.CASCADE, related_name="vehicles")
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     manufacture_year = models.PositiveIntegerField()  # New field

@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from regulator.permissions import IsCustomer, IsAgent
 from rest_framework.exceptions import PermissionDenied
+from regulator.models import Agent, Customer
 
 
 
@@ -46,17 +47,30 @@ class StaffBookingRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAgent]
 
     def perform_update(self, serializer):
-        instance = serializer.save(is_reviewed=True)
+        instance = serializer.save()
 
-        # On acceptance, create Customer from BookingRequest.user if not already a customer
-        if instance.status == 'accepted':
-            user = instance.user
-            if not hasattr(user, 'customer'):
-                from regulator.models import Customer
-                Customer.objects.create(
-                    user=user,
-                    first_name=user.first_name,
-                    last_name=user.last_name,
-                    email=user.email,
-                    phone=user.phone,
+        # If status is 'accepted' and agent is authenticated
+        if instance.status == 'accepted' and self.request.user.role == 'agent':
+            agent = self.request.user.agent  # assumes you have OneToOne User-Agent
+
+            # Attach the agent to the booking request
+            instance.agent = agent
+            instance.save()
+
+            # Create Customer if it doesn’t exist
+            if not instance.customer:
+                customer = Customer.objects.create(
+                    first_name=instance.first_name,
+                    last_name=instance.last_name,
+                    email=instance.email,
+                    phone_number=instance.phone_number,
+                    # etc – populate other required fields
                 )
+                instance.customer = customer
+                instance.save()
+
+    def get_queryset(self):
+        user = self.request.user
+        if hasattr(user, "agent"):
+            return BookingRequest.objects.filter(agent=user.agent).select_related('user', 'vehicle')
+        return BookingRequest.objects.none()
