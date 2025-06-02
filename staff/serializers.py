@@ -34,7 +34,7 @@ class VehicleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vehicle
-        fields = ["id", "make", "model", "manufacture_year", "color", "mileage", "mileage_allowance", "ownership", 
+        fields = ["id", "agent", "make", "model", "manufacture_year", "color", "mileage", "mileage_allowance", "ownership", 
                   "price_per_day", "deposit", "maintenance_records", "registration_number", "next_service_date", 
                   "images", "image_uploads", "removed_images"]
 

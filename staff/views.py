@@ -17,6 +17,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication
 from regulator.permissions import IsAgent
 from regulator.authentication import CookieJWTAuthentication
+from rest_framework.exceptions import PermissionDenied
+
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
@@ -46,6 +48,15 @@ class VehicleViewSet(viewsets.ModelViewSet):
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+
+        # Defensive check
+        if not hasattr(user, "agent_profile"):
+            raise PermissionDenied("You must be an agent to create a vehicle.")
+
+        serializer.save(agent=user.agent_profile)
 
 
 
