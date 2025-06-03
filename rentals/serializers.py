@@ -7,9 +7,18 @@ from rest_framework.exceptions import NotAuthenticated
 
 
 class VehicleMiniSerializer(serializers.ModelSerializer):
+    main_image = serializers.SerializerMethodField()
+
     class Meta:
         model = Vehicle
-        fields = ['id', 'make', 'model', 'registration_number', 'price_per_day']
+        fields = ['id', 'make', 'model', 'registration_number', 'price_per_day', 'deposit', 'main_image']
+
+    def get_main_image(self, obj):
+        image = obj.images.first()
+        if image and image.image:
+            request = self.context.get("request")
+            return request.build_absolute_uri(image.image.url) if request else image.image.url
+        return None
 
 
 class BookingRequestSerializer(serializers.ModelSerializer):
@@ -22,6 +31,7 @@ class BookingRequestSerializer(serializers.ModelSerializer):
         model = BookingRequest
         fields = [
             'id',
+            'created_at',
             'vehicle',
             'vehicle_id',
             'start_date',
@@ -69,6 +79,9 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             }
         except Customer.DoesNotExist:
             return None
+        
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 class PublicVehicleImageSerializer(serializers.ModelSerializer):
     class Meta:

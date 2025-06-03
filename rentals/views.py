@@ -61,7 +61,7 @@ class StaffBookingRequestViewSet(viewsets.ModelViewSet):
 
             
             if not instance.customer:
-                instance.customer = customer
+                instance.customer = Customer
                 instance.save()
 
     def get_queryset(self):

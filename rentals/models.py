@@ -18,10 +18,11 @@ class BookingRequest(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     message = models.TextField(blank=True, null=True)
-    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # NEW
     staff_notes = models.TextField(blank=True, null=True)  # NEW
-
+    is_confirmed_by_customer = models.BooleanField(default=False)
+    customer_docs_submitted = models.BooleanField(default=False)
+    dummy_payment_done = models.BooleanField(default=False)
     is_reviewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     agent = models.ForeignKey(
