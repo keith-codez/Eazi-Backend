@@ -1,9 +1,10 @@
 from django.db import models
-from staff.models import Vehicle
+from staff.models import Vehicle, Location
 from regulator.models import Customer
 from regulator.models import User
 from regulator.models import Customer 
 from regulator.models import Agent 
+
 
 class BookingRequest(models.Model):
     STATUS_CHOICES = [
@@ -17,12 +18,16 @@ class BookingRequest(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='booking_requests')
     start_date = models.DateField()
     end_date = models.DateField()
+    pickup_time = models.TimeField(null=True, blank=True)
+    dropoff_time = models.TimeField(null=True, blank=True)
+    pickup_location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='pickup_requests')
+    dropoff_location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='dropoff_requests', null=True, blank=True)
     message = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # NEW
     staff_notes = models.TextField(blank=True, null=True)  # NEW
-    is_confirmed_by_customer = models.BooleanField(default=False)
-    customer_docs_submitted = models.BooleanField(default=False)
-    dummy_payment_done = models.BooleanField(default=False)
+    is_confirmed_by_customer = models.BooleanField(default=False) # may not be needed
+    customer_docs_submitted = models.BooleanField(default=False) # may not be needed
+    dummy_payment_done = models.BooleanField(default=False) # may not be needed
     is_reviewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     agent = models.ForeignKey(
