@@ -19,7 +19,6 @@ class Location(models.Model):
     address = models.TextField(blank=True)
     city = models.CharField(max_length=100)
     coordinates = models.CharField(max_length=100, blank=True)  # For maps (optional)
-    agency = models.ForeignKey(Agency, on_delete=models.CASCADE, related_name='locations')
 
     def __str__(self):
         return self.name
@@ -44,7 +43,7 @@ class Vehicle(models.Model):
     maintenance_records = models.TextField(blank=True, null=True)
     registration_number = models.CharField(max_length=20, unique=True)
     next_service_date = models.DateField(blank=True, null=True)  # New field
-    pickup_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    pickup_locations = models.ManyToManyField('Location', related_name='vehicles')
 
     def __str__(self):
         return f"{self.make} {self.model} {self.color} ({self.registration_number})"

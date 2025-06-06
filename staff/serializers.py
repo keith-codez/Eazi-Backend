@@ -1,8 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Booking
+from .models import Vehicle, VehicleImage, MaintenanceRecord, VehicleUnavailability, Booking, Location
 from rentals.models import BookingRequest
 from regulator.models import Customer
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['id', 'name', 'city', 'address']
 
 
 class MaintenanceRecordSerializer(serializers.ModelSerializer):
@@ -34,16 +40,24 @@ class VehicleSerializer(serializers.ModelSerializer):
         required=False
     )
 
+    pickup_locations = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Location.objects.all(),
+        required=False
+    )
+
     class Meta:
         model = Vehicle
         fields = ["id", "agent", "make", "model", "manufacture_year", "color", "mileage", "mileage_allowance", "ownership", 
                   "price_per_day", "deposit", "maintenance_records", "registration_number", "next_service_date", 
-                  "images", "image_uploads", "removed_images"]
+                  "images", "image_uploads", "removed_images",  "pickup_locations"]
 
     def create(self, validated_data):
         """ Handles creating a vehicle along with image uploads. """
         images_data = validated_data.pop("image_uploads", [])  # Extract image data before creation
         vehicle = Vehicle.objects.create(**validated_data)  # Create vehicle
+        pickup_locations = validated_data.pop("pickup_locations", [])
+        vehicle.pickup_locations.set(pickup_locations)
         
         # Handle image uploads
         for image_data in images_data:

@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, action 
 from django.contrib.auth import get_user_model, authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, BookingSerializer
-from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Booking
+from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, BookingSerializer, LocationSerializer
+from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Booking, Location
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, F
 from rentals.models import BookingRequest
@@ -19,6 +19,17 @@ from regulator.permissions import IsAgent
 from regulator.authentication import CookieJWTAuthentication
 from rest_framework.exceptions import PermissionDenied
 
+
+
+class AgentLocationListView(generics.ListAPIView):
+    serializer_class = LocationSerializer
+    permission_classes = [IsAuthenticated, IsAgent]
+
+    def get_queryset(self):
+        user = self.request.user
+        if hasattr(user, 'agent_profile'):
+            return Location.objects.filter(agency=user.agent_profile.agency)
+        return Location.objects.none()
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
