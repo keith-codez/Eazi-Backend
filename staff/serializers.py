@@ -20,6 +20,8 @@ class VehicleImageSerializer(serializers.ModelSerializer):
         }
 
 class VehicleSerializer(serializers.ModelSerializer):
+
+    agent = serializers.PrimaryKeyRelatedField(read_only=True)
     images = VehicleImageSerializer(many=True, read_only=True)
     image_uploads = serializers.ListField(
         child=serializers.ImageField(allow_empty_file=False, use_url=False),

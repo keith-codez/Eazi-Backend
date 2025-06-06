@@ -155,6 +155,7 @@ class CustomerRegisterView(APIView):
 
 
 class AgentRegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         serializer = AgentRegistrationSerializer(data=data)

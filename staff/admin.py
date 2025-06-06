@@ -5,6 +5,7 @@ from rentals.models import BookingRequest
 from django.contrib.auth.admin import UserAdmin
 
 
+
 # ✅ Allows adding multiple images per vehicle
 class VehicleImageInline(admin.TabularInline):
     model = VehicleImage
@@ -53,3 +54,6 @@ class BookingAdmin(admin.ModelAdmin):
 class BookingRequestAdmin(admin.ModelAdmin):
     list_display = ['vehicle', 'start_date', 'end_date', 'is_reviewed', 'created_at']
     autocomplete_fields = ['vehicle']
+
+
+
