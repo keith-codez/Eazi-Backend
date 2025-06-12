@@ -55,8 +55,11 @@ class VehicleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """ Handles creating a vehicle along with image uploads. """
         images_data = validated_data.pop("image_uploads", [])  # Extract image data before creation
-        vehicle = Vehicle.objects.create(**validated_data)  # Create vehicle
         pickup_locations = validated_data.pop("pickup_locations", [])
+
+        
+        vehicle = Vehicle.objects.create(**validated_data)  # Create vehicle
+        
         vehicle.pickup_locations.set(pickup_locations)
         
         # Handle image uploads
