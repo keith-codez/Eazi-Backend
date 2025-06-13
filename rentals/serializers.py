@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from .models import BookingRequest
-from staff.models import Vehicle, VehicleImage  # For nested data
+from staff.models import Vehicle, VehicleImage, Location  # For nested data
 from regulator.serializers import CustomerMiniSerializer, CustomerSerializer
 from regulator.models import Customer
 from rest_framework.exceptions import NotAuthenticated
+from staff.serializers import LocationSerializer
 
 
 class VehicleMiniSerializer(serializers.ModelSerializer):
@@ -24,6 +25,8 @@ class VehicleMiniSerializer(serializers.ModelSerializer):
 class BookingRequestSerializer(serializers.ModelSerializer):
     vehicle = VehicleMiniSerializer(read_only=True)
     vehicle_id = serializers.PrimaryKeyRelatedField(queryset=Vehicle.objects.all(), write_only=True)
+    pickup_location_id = serializers.PrimaryKeyRelatedField(queryset=Location.objects.none(), write_only=True)  # initial empty
+    dropoff_location_id = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all(), write_only=True)
     customer = serializers.SerializerMethodField()
 
 
@@ -34,14 +37,30 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             'created_at',
             'vehicle',
             'vehicle_id',
+            'pickup_location_id',
+            'dropoff_location_id',
             'start_date',
             'end_date',
+            'pickup_time',
+            'dropoff_time',
             'message',
             'is_reviewed',
             'status',
             'staff_notes',
             'customer'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            vehicle_id = request.data.get('vehicle_id')
+            if vehicle_id:
+                try:
+                    vehicle = Vehicle.objects.get(id=vehicle_id)
+                    self.fields['pickup_location_id'].queryset = vehicle.pickup_locations.all()
+                except Vehicle.DoesNotExist:
+                    pass
 
 
     def create(self, validated_data):
@@ -57,12 +76,16 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Booking requests must come from a registered customer.")
 
         vehicle = validated_data.pop('vehicle_id')
-        agent = vehicle.agent  # Auto-assign agent based on vehicle
+        pickup_location = validated_data.pop('pickup_location_id')
+        dropoff_location = validated_data.pop('dropoff_location_id')
+        agent = vehicle.agent
 
         return BookingRequest.objects.create(
             user=user,
             customer=customer,
             vehicle=vehicle,
+            pickup_location=pickup_location,
+            dropoff_location=dropoff_location,
             agent=agent,
             **validated_data
         )
@@ -82,6 +105,21 @@ class BookingRequestSerializer(serializers.ModelSerializer):
         
     def get_serializer_context(self):
         return {'request': self.request}
+    
+
+    def validate(self, data):
+        vehicle = data.get('vehicle_id')
+        pickup_location = data.get('pickup_location_id')
+        dropoff_location = data.get('dropoff_location_id')
+
+        if pickup_location not in vehicle.pickup_locations.all():
+            raise serializers.ValidationError("Selected pickup location is not available for this vehicle.")
+
+        # Optional: same rule for dropoff if needed
+        if dropoff_location not in vehicle.pickup_locations.all():
+            raise serializers.ValidationError("Selected dropoff location is not available for this vehicle.")
+
+        return data
 
 class PublicVehicleImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -91,7 +129,13 @@ class PublicVehicleImageSerializer(serializers.ModelSerializer):
             "image": {"use_url": True}  # This ensures the URL is included in the response
         }
 
+
+
+pickup_locations = LocationSerializer(many=True, read_only=True)
+
 class PublicVehicleSerializer(serializers.ModelSerializer):
+
+    pickup_locations = pickup_locations
 
     images = PublicVehicleImageSerializer(many=True, read_only=True)  # Include images in the vehicle serializer
     class Meta:
@@ -99,3 +143,8 @@ class PublicVehicleSerializer(serializers.ModelSerializer):
         fields = '__all__'  # This gives you all model fields
 
 
+
+class StaffBookingRequestUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingRequest
+        fields = ['status', 'staff_notes']

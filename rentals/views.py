@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from .models import BookingRequest
 from staff.models import Vehicle, VehicleImage
-from .serializers import BookingRequestSerializer, PublicVehicleSerializer, PublicVehicleImageSerializer
+from .serializers import BookingRequestSerializer, PublicVehicleSerializer, PublicVehicleImageSerializer, StaffBookingRequestUpdateSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -70,3 +70,8 @@ class StaffBookingRequestViewSet(viewsets.ModelViewSet):
         if hasattr(user, "agent_profile"):
             return BookingRequest.objects.filter(agent=user.agent_profile).select_related('user', 'vehicle')
         return BookingRequest.objects.none()
+    
+    def get_serializer_class(self):
+        if self.action in ['update', 'partial_update']:
+            return StaffBookingRequestUpdateSerializer
+        return BookingRequestSerializer
