@@ -48,22 +48,24 @@ class StaffBookingRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAgent]
 
     def perform_update(self, serializer):
+        # Get the previous state of the instance before saving
+        instance = serializer.instance
+        previous_status = instance.status
+
+        # Save the updated instance
         instance = serializer.save()
 
-        # If status is 'accepted' and agent is authenticated
-        if instance.status == 'accepted' and self.request.user.role == 'agent':
-            agent = self.request.user.agent_profile  # assumes you have OneToOne User-Agent
-
-            # Attach the agent to the booking request
-            instance.agent = agent
-
+        # If the status changed from 'pending' to either 'accepted' or 'declined'
+        if previous_status == 'pending' and instance.status in ['accepted', 'declined']:
             instance.is_reviewed = True
+
+            # If accepted and agent is authenticated, assign agent
+            if instance.status == 'accepted' and self.request.user.role == 'agent':
+                agent = self.request.user.agent_profile  # assumes you have OneToOne User-Agent
+                instance.agent = agent
+
             instance.save()
 
-            
-            if not instance.customer:
-                instance.customer = Customer
-                instance.save()
 
     def get_queryset(self):
         user = self.request.user

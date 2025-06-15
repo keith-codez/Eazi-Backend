@@ -96,7 +96,6 @@ class Booking(models.Model):
     payment_method = models.CharField(max_length=20, choices=[("mobile transfer", "Mobile Transfer"), ("debit card", "Debit Card"), ("cash", "Cash")], default="cash") 
     booking_status = models.CharField(max_length=20, choices=[("confirmed", "Confirmed"), ("pending", "Pending"), ("completed", "Completed"), ("active", "Active"), ("canceled", "Canceled")], default="pending")
     estimated_mileage = models.PositiveIntegerField(default=0)
-    destination = models.CharField(max_length=255, blank=True, null=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     discount_description = models.TextField(blank=True, null=True)
     pickup_location = models.CharField(max_length=255, blank=True, null=True)
@@ -104,6 +103,8 @@ class Booking(models.Model):
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
 
     def __str__(self):
         return f"Booking for {self.customer} - {self.vehicle} from {self.start_date} to {self.end_date}"
