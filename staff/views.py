@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, action 
 from django.contrib.auth import get_user_model, authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, BookingSerializer, LocationSerializer
+from .serializers import FinalizeBookingSerializer, VehicleSerializer, MaintenanceRecordSerializer, VehicleUnavailabilitySerializer, VehicleImageSerializer, BookingSerializer, LocationSerializer
 from .models import Vehicle, MaintenanceRecord, VehicleUnavailability, VehicleImage, Booking, Location
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, F
@@ -15,7 +15,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from regulator.serializers import CustomerSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication
-from regulator.permissions import IsAgent
+from regulator.permissions import IsAgent, IsCustomer
 from regulator.authentication import CookieJWTAuthentication
 from rest_framework.exceptions import PermissionDenied
 
@@ -112,3 +112,15 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class FinalizeBookingView(APIView):
+    permission_classes = [IsAuthenticated, IsCustomer]
+
+    def post(self, request, booking_request_id):
+        serializer = FinalizeBookingSerializer(data=request.data, context={
+            'request': request,
+            'booking_request_id': booking_request_id
+        })
+        if serializer.is_valid():
+            booking = serializer.save()
+            return Response({"message": "Booking confirmed successfully!", "booking_id": booking.id})
+        return Response(serializer.errors, status=400)

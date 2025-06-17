@@ -136,6 +136,28 @@ class CustomerViewSet(viewsets.ModelViewSet):
         elif user.role == 'admin':
             return Customer.objects.all()
         return Customer.objects.none()
+    
+    def get_object(self):
+        user = self.request.user
+
+        if user.role == 'customer':
+            # Ensure customers can only access their own profile
+            return user.customer_profile
+
+        return super().get_object()
+    
+    @action(detail=False, methods=["patch"], url_path="me")
+    def update_me(self, request):
+        """Allow the logged-in customer to update their own profile."""
+        try:
+            customer = request.user.customer_profile
+        except Customer.DoesNotExist:
+            return Response({"detail": "Customer profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(customer, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class CustomerRegisterView(APIView):

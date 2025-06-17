@@ -115,7 +115,7 @@ class LoginSerializer(serializers.Serializer):
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        exclude = ['related_agent', 'related_agency']  # EXCLUDE here instead of "__all__"
+        exclude = ['agents', 'related_agency']  # EXCLUDE here instead of "__all__"
 
 
     def validate_national_id(self, value):

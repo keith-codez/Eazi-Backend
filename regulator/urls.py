@@ -8,7 +8,8 @@ from staff.views import (
     MaintenanceRecordViewSet,
     VehicleImageViewSet,
     BookingViewSet,
-    AgentLocationListView
+    AgentLocationListView,
+    FinalizeBookingView
 )
 from rentals.views import PublicVehicleViewSet, StaffBookingRequestViewSet, BookingRequestViewSet
 from rest_framework_simplejwt.views import (
@@ -42,4 +43,5 @@ urlpatterns = [
   path("csrf/", get_csrf_token, name="csrf"),
   path("analytics/", AnalyticsAPIView.as_view(), name="analytics"),
   path("agent-locations/", AgentLocationListView.as_view(), name="agent-locations"),
+  path('booking-request/<int:booking_request_id>/finalize/', FinalizeBookingView.as_view()),
 ]

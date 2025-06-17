@@ -125,3 +125,66 @@ class BookingSerializer(serializers.ModelSerializer):
         } if obj.vehicle else None
 
 
+
+class FinalizeBookingSerializer(serializers.Serializer):
+    national_id = serializers.CharField()
+    street_address = serializers.CharField()
+    address_line2 = serializers.CharField(required=False, allow_blank=True)
+    city = serializers.CharField()
+    country = serializers.CharField()
+
+    next_of_kin1_first_name = serializers.CharField()
+    next_of_kin1_last_name = serializers.CharField()
+    next_of_kin1_id_number = serializers.CharField()
+    next_of_kin1_phone = serializers.CharField()
+
+    pay_now = serializers.BooleanField()
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        customer = user.customer_profile
+        booking_request = BookingRequest.objects.get(
+            id=self.context['booking_request_id'],
+            user=user,
+            status='accepted'
+        )
+
+        # Update customer profile
+        customer.national_id = self.validated_data['national_id']
+        customer.street_address = self.validated_data['street_address']
+        customer.address_line2 = self.validated_data['address_line2']
+        customer.city = self.validated_data['city']
+        customer.country = self.validated_data['country']
+
+        customer.next_of_kin1_first_name = self.validated_data['next_of_kin1_first_name']
+        customer.next_of_kin1_last_name = self.validated_data['next_of_kin1_last_name']
+        customer.next_of_kin1_id_number = self.validated_data['next_of_kin1_id_number']
+        customer.next_of_kin1_phone = self.validated_data['next_of_kin1_phone']
+        customer.save()
+
+        # Create Booking instance
+        vehicle = booking_request.vehicle
+        booking = Booking.objects.create(
+            customer=customer,
+            vehicle=vehicle,
+            start_date=booking_request.start_date,
+            end_date=booking_request.end_date,
+            pickup_time=booking_request.pickup_time,
+            dropoff_time=booking_request.dropoff_time,
+            pickup_location=booking_request.pickup_location.name,
+            dropoff_location=booking_request.dropoff_location.name if booking_request.dropoff_location else "",
+            booking_amount=vehicle.daily_price * ((booking_request.end_date - booking_request.start_date).days + 1),
+            booking_deposit=vehicle.deposit_amount,
+            estimated_mileage=0,
+            discount_amount=100 if self.validated_data['pay_now'] else 0,
+            discount_description="Paid full online" if self.validated_data['pay_now'] else "Pay at counter",
+            payment_method="mobile transfer" if self.validated_data['pay_now'] else "cash",
+            total_amount=(vehicle.daily_price * ((booking_request.end_date - booking_request.start_date).days + 1)) - (100 if self.validated_data['pay_now'] else 0),
+            booking_status='pending'
+        )
+
+        booking_request.is_confirmed_by_customer = True
+        booking_request.save()
+        return booking
+
+
