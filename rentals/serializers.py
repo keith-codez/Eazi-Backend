@@ -47,7 +47,7 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             'is_reviewed',
             'status',
             'staff_notes',
-            'customer'
+            'customer',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -91,17 +91,26 @@ class BookingRequestSerializer(serializers.ModelSerializer):
         )
 
     def get_customer(self, obj):
-        user = obj.user
-        try:
-            customer = user.customer_profile
-            return {
-                "first_name": customer.first_name,
-                "last_name": customer.last_name,
-                "email": customer.email,
-                "phone_number": customer.phone_number,
-            }
-        except Customer.DoesNotExist:
+        customer = getattr(obj.user, 'customer_profile', None)
+        if not customer:
             return None
+
+        return {
+            "first_name": customer.first_name,
+            "last_name": customer.last_name,
+            "email": customer.email,
+            "phone_number": customer.phone_number,
+            "national_id": customer.national_id,
+            "street_address": customer.street_address,
+            "address_line2": customer.address_line2,
+            "city": customer.city,
+            "country": customer.country,
+            "next_of_kin1_first_name": customer.next_of_kin1_first_name,
+            "next_of_kin1_last_name": customer.next_of_kin1_last_name,
+            "next_of_kin1_id_number": customer.next_of_kin1_id_number,
+            "next_of_kin1_phone": customer.next_of_kin1_phone,
+            "drivers_license": customer.drivers_license.url if customer.drivers_license else None,
+        }
         
     def get_serializer_context(self):
         return {'request': self.request}
