@@ -173,13 +173,13 @@ class FinalizeBookingSerializer(serializers.Serializer):
             dropoff_time=booking_request.dropoff_time,
             pickup_location=booking_request.pickup_location.name,
             dropoff_location=booking_request.dropoff_location.name if booking_request.dropoff_location else "",
-            booking_amount=vehicle.daily_price * ((booking_request.end_date - booking_request.start_date).days + 1),
-            booking_deposit=vehicle.deposit_amount,
+            booking_amount=vehicle.price_per_day * ((booking_request.end_date - booking_request.start_date).days + 1),
+            booking_deposit=vehicle.deposit,
             estimated_mileage=0,
             discount_amount=100 if self.validated_data['pay_now'] else 0,
             discount_description="Paid full online" if self.validated_data['pay_now'] else "Pay at counter",
             payment_method="mobile transfer" if self.validated_data['pay_now'] else "cash",
-            total_amount=(vehicle.daily_price * ((booking_request.end_date - booking_request.start_date).days + 1)) - (100 if self.validated_data['pay_now'] else 0),
+            total_amount=(vehicle.price_per_day* ((booking_request.end_date - booking_request.start_date).days + 1)) - (100 if self.validated_data['pay_now'] else 0),
             booking_status='pending'
         )
 
