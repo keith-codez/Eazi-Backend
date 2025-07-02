@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import BookingRequest
-from staff.models import Vehicle, VehicleImage, Location  # For nested data
+from staff.models import Vehicle, VehicleImage, Location, Booking  # For nested data
 from regulator.serializers import CustomerMiniSerializer, CustomerSerializer
 from regulator.models import Customer
 from rest_framework.exceptions import NotAuthenticated
@@ -28,6 +28,7 @@ class BookingRequestSerializer(serializers.ModelSerializer):
     pickup_location_id = serializers.PrimaryKeyRelatedField(queryset=Location.objects.none(), write_only=True)  # initial empty
     dropoff_location_id = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all(), write_only=True)
     customer = serializers.SerializerMethodField()
+    has_booking = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -48,6 +49,7 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             'status',
             'staff_notes',
             'customer',
+            'has_booking',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -129,6 +131,9 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Selected dropoff location is not available for this vehicle.")
 
         return data
+
+    def get_has_booking(self, obj):
+        return Booking.objects.filter(booking_request=obj).exists()
 
 class PublicVehicleImageSerializer(serializers.ModelSerializer):
     class Meta:

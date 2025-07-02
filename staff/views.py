@@ -18,7 +18,7 @@ from rest_framework.authentication import SessionAuthentication
 from regulator.permissions import IsAgent, IsCustomer
 from regulator.authentication import CookieJWTAuthentication
 from rest_framework.exceptions import PermissionDenied
-
+from django.shortcuts import get_object_or_404
 
 
 class AgentLocationListView(generics.ListAPIView):
@@ -116,10 +116,23 @@ class FinalizeBookingView(APIView):
     permission_classes = [IsAuthenticated, IsCustomer]
 
     def post(self, request, booking_request_id):
+        serializer = FinalizeBookingSerializer(
+            data=request.data,
+            context={
+                'request': request,
+                'booking_request_id': booking_request_id  # ✅ must be here
+            }
+        )
+        booking_request = get_object_or_404(BookingRequest, id=booking_request_id)
+
+        if Booking.objects.filter(booking_request=booking_request).exists():
+            return Response({"error": "Booking already exists for this request."}, status=400)
+
         serializer = FinalizeBookingSerializer(data=request.data, context={
             'request': request,
-            'booking_request_id': booking_request_id
+            'booking_request_id': booking_request.id  # pass the ID, not the whole object
         })
+
         if serializer.is_valid():
             booking = serializer.save()
             return Response({"message": "Booking confirmed successfully!", "booking_id": booking.id})

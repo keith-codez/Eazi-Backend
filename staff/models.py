@@ -86,6 +86,7 @@ class VehicleUnavailability(models.Model):
 
 
 class Booking(models.Model):
+    booking_request = models.OneToOneField('rentals.BookingRequest', on_delete=models.CASCADE, related_name='booking', null=True, blank=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="bookings")
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name="bookings")
     created_at = models.DateTimeField(auto_now_add=True)

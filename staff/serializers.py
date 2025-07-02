@@ -180,6 +180,7 @@ class FinalizeBookingSerializer(serializers.Serializer):
             discount_description="Paid full online" if self.validated_data['pay_now'] else "Pay at counter",
             payment_method="mobile transfer" if self.validated_data['pay_now'] else "cash",
             total_amount=(vehicle.price_per_day* ((booking_request.end_date - booking_request.start_date).days + 1)) - (100 if self.validated_data['pay_now'] else 0),
+            booking_request=booking_request,
             booking_status='pending'
         )
 
