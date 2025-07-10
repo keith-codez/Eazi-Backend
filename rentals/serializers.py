@@ -60,7 +60,8 @@ class BookingRequestSerializer(serializers.ModelSerializer):
             if vehicle_id:
                 try:
                     vehicle = Vehicle.objects.get(id=vehicle_id)
-                    self.fields['pickup_location_id'].queryset = vehicle.pickup_locations.all()
+                    agency_locations = vehicle.agent.agency.locations.all()  # Assuming Vehicle has a ForeignKey to Agent
+                    self.fields['pickup_location_id'].queryset = agency_locations.all()
                 except Vehicle.DoesNotExist:
                     pass
 
@@ -123,11 +124,11 @@ class BookingRequestSerializer(serializers.ModelSerializer):
         pickup_location = data.get('pickup_location_id')
         dropoff_location = data.get('dropoff_location_id')
 
-        if pickup_location not in vehicle.pickup_locations.all():
+        if pickup_location not in vehicle.agent.agency.locations.all():
             raise serializers.ValidationError("Selected pickup location is not available for this vehicle.")
 
         # Optional: same rule for dropoff if needed
-        if dropoff_location not in vehicle.pickup_locations.all():
+        if dropoff_location not in vehicle.agent.agency.locations.all():
             raise serializers.ValidationError("Selected dropoff location is not available for this vehicle.")
 
         return data
@@ -148,15 +149,32 @@ class PublicVehicleImageSerializer(serializers.ModelSerializer):
 pickup_locations = LocationSerializer(many=True, read_only=True)
 
 class PublicVehicleSerializer(serializers.ModelSerializer):
-
-    pickup_locations = pickup_locations
-
+    pickup_locations = serializers.SerializerMethodField()
     images = PublicVehicleImageSerializer(many=True, read_only=True)  # Include images in the vehicle serializer
+    agency_name = serializers.SerializerMethodField()
+    agency_logo = serializers.SerializerMethodField()
+
+
     class Meta:
         model = Vehicle
         fields = '__all__'  # This gives you all model fields
+    
+    def get_pickup_locations(self, obj):
+        agent = obj.agent
+        if hasattr(agent, 'agency') and agent.agency:
+            locations = agent.agency.locations.all()  # assumes related_name='locations' on Agency.locations
+            return LocationSerializer(locations, many=True).data
+        return []
+    
+    
+    def get_agency_name(self, obj):
+        return obj.agent.agency.name if obj.agent.agency else None
 
-
+    
+    def get_agency_logo(self, obj):
+        request = self.context.get("request")
+        logo = obj.agent.agency.logo if obj.agent.agency and obj.agent.agency.logo else None
+        return request.build_absolute_uri(logo.url) if logo else None
 
 class StaffBookingRequestUpdateSerializer(serializers.ModelSerializer):
     class Meta:

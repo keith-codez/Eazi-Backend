@@ -185,6 +185,8 @@ class FinalizeBookingSerializer(serializers.Serializer):
         )
 
         booking_request.is_confirmed_by_customer = True
+        booking_request.customer_docs_submitted = True
+        booking_request.dummy_payment_done = True
         booking_request.save()
         return booking
 

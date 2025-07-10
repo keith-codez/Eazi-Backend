@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
-from .serializers import AgentRegistrationSerializer, LoginSerializer, CustomerSerializer, AgencyRegistrationSerializer, CustomerRegistrationSerializer 
+from .serializers import AgencySerializer, AgentRegistrationSerializer, LoginSerializer, CustomerSerializer, AgencyRegistrationSerializer, CustomerRegistrationSerializer 
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, Customer
+from .models import Agency, User, Customer
 from staff.models import Booking 
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.views import APIView
@@ -17,6 +17,8 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
+from rest_framework.parsers import MultiPartParser, FormParser
+
 from regulator.authentication import CookieJWTAuthentication
 
 
@@ -198,7 +200,13 @@ class AgencyRegisterView(APIView):
             serializer.save()
             return Response({'message': 'Agency registered successfully'}, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)\
+        
+
+class AgencyViewSet(viewsets.ModelViewSet):
+    queryset = Agency.objects.all()
+    serializer_class = AgencySerializer
+    parser_classes = (MultiPartParser, FormParser)
 
 
 @api_view(["GET"])

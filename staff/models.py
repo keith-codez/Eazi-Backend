@@ -43,8 +43,7 @@ class Vehicle(models.Model):
     maintenance_records = models.TextField(blank=True, null=True)
     registration_number = models.CharField(max_length=20, unique=True)
     next_service_date = models.DateField(blank=True, null=True)  # New field
-    pickup_locations = models.ManyToManyField('Location', related_name='vehicles')
-
+    
     def __str__(self):
         return f"{self.make} {self.model} {self.color} ({self.registration_number})"
 

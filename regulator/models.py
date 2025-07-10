@@ -92,6 +92,8 @@ class Agency(models.Model):
     created_by = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agency_profile')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    logo = models.ImageField(upload_to='agency_logos/', blank=True, null=True)
+
     def __str__(self):
         return self.name
 
