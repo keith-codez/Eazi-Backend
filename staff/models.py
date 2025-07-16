@@ -104,6 +104,13 @@ class Booking(models.Model):
     dropoff_time = models.TimeField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    agency = models.ForeignKey(
+        Agency, 
+        on_delete=models.PROTECT, 
+        related_name="bookings", 
+        null=True, 
+        blank=True
+    )
 
 
     def __str__(self):

@@ -45,7 +45,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ("customer", "vehicle", "start_date", "end_date", "booking_status")
+    list_display = ("customer", "vehicle","created_at", "booking_status")
     list_filter = ("booking_status", "start_date", "end_date")
     search_fields = ("customer__first_name", "customer__last_name", "vehicle__make", "vehicle__model")
 

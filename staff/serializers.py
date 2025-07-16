@@ -164,6 +164,7 @@ class FinalizeBookingSerializer(serializers.Serializer):
 
         # Create Booking instance
         vehicle = booking_request.vehicle
+        agency = vehicle.agent.agency if vehicle.agent else None  # Get agency from the vehicle
         booking = Booking.objects.create(
             customer=customer,
             vehicle=vehicle,
@@ -181,7 +182,8 @@ class FinalizeBookingSerializer(serializers.Serializer):
             payment_method="mobile transfer" if self.validated_data['pay_now'] else "cash",
             total_amount=(vehicle.price_per_day* ((booking_request.end_date - booking_request.start_date).days + 1)) - (100 if self.validated_data['pay_now'] else 0),
             booking_request=booking_request,
-            booking_status='pending'
+            booking_status='pending',
+            agency=agency
         )
 
         booking_request.is_confirmed_by_customer = True
