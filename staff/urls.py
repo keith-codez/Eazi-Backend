@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()
-router.register(r'vehicles', VehicleViewSet)
+router.register(r'vehicles', VehicleViewSet, basename='vehicle')
 router.register(r'maintenance', MaintenanceRecordViewSet)
 router.register(r'vehicle-images', VehicleImageViewSet)
 router.register(r'bookings', BookingViewSet)

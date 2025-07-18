@@ -29,8 +29,7 @@ class Vehicle(models.Model):
         ("company", "Company Owned"),
         ("private", "Privately Owned"),
     ]
-
-    agent = models.ForeignKey(Agent, on_delete=models.CASCADE, related_name="vehicles")
+    agency = models.ForeignKey(Agency, on_delete=models.CASCADE, related_name='vehicles')
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     manufacture_year = models.PositiveIntegerField()  # New field

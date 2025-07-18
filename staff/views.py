@@ -19,7 +19,7 @@ from regulator.permissions import IsAgent, IsCustomer
 from regulator.authentication import CookieJWTAuthentication
 from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-
+from regulator.utility.utils import get_user_agency
 
 class AgentLocationListView(generics.ListAPIView):
     serializer_class = LocationSerializer
@@ -33,11 +33,14 @@ class AgentLocationListView(generics.ListAPIView):
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
-    queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
     parser_classes = (MultiPartParser, FormParser)  # ✅ Allow image uploads
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated, IsAgent]
+
+    def get_queryset(self):
+        agency = get_user_agency(self.request.user)
+        return Vehicle.objects.filter(agency=agency)
 
     def update(self, request, *args, **kwargs):
         vehicle = self.get_object()
@@ -61,14 +64,10 @@ class VehicleViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
-        user = self.request.user
-
-        # Defensive check
-        if not hasattr(user, "agent_profile"):
-            raise PermissionDenied("You must be an agent to create a vehicle.")
-
-        serializer.save(agent=user.agent_profile)
-
+        agency = get_user_agency(self.request.user)
+        if not agency:
+            raise PermissionDenied("No associated agency found.")
+        serializer.save(agency=agency)
 
 
 class MaintenanceRecordViewSet(viewsets.ModelViewSet):
