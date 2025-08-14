@@ -160,22 +160,26 @@ class PublicVehicleSerializer(serializers.ModelSerializer):
         fields = '__all__'  # This gives you all model fields
     
     def get_pickup_locations(self, obj):
-        agent = obj.agent
-        if hasattr(agent, 'agency') and agent.agency:
-            locations = agent.agency.locations.all()  # assumes related_name='locations' on Agency.locations
+        if obj.agency:
+            locations = obj.agency.locations.all()
             return LocationSerializer(locations, many=True).data
         return []
-    
+        
     
     def get_agency_name(self, obj):
-        return obj.agent.agency.name if obj.agent.agency else None
+        return obj.agency.name if obj.agency else None
 
     
     def get_agency_logo(self, obj):
-        request = self.context.get("request")
-        logo = obj.agent.agency.logo if obj.agent.agency and obj.agent.agency.logo else None
-        return request.build_absolute_uri(logo.url) if logo else None
-
+        try:
+            request = self.context.get("request")
+            if obj.agency and obj.agency.logo and request:
+                return request.build_absolute_uri(obj.agency.logo.url)
+        except Exception:
+            pass
+        return None
+    
+    
 class StaffBookingRequestUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookingRequest

@@ -60,7 +60,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         
         vehicle = Vehicle.objects.create(**validated_data)  # Create vehicle
         
-        vehicle.pickup_locations.set(pickup_locations)
+        vehicle.agency.locations.set(pickup_locations)
         
         # Handle image uploads
         for image_data in images_data:
