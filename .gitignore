@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Envs
+venv/
+.env
+.env.*
+
+# Django
+staticfiles/
+media/
+
+# Node (if any)
+node_modules/
+
+# Docker
+.dockerignore
